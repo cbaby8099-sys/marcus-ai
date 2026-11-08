@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080b12">
-<title>Marcus AI V7</title>
+<title>Marcus AI V8</title>
 
 <style>
 * { box-sizing: border-box; }
@@ -18,7 +17,7 @@ body {
 }
 
 header {
-  padding: 18px;
+  padding: 17px;
   background: #101827;
   border-bottom: 1px solid #26364c;
   display: flex;
@@ -26,31 +25,38 @@ header {
   align-items: center;
 }
 
-header h2 { margin: 0; color: #55c8ff; }
+header h2 {
+  margin: 0;
+  color: #55c8ff;
+}
 
-.status { font-size: 12px; color: #55df9b; }
+.status {
+  font-size: 11px;
+  color: #55df9b;
+}
 
 main {
   max-width: 750px;
   margin: auto;
-  padding: 16px;
+  padding: 15px;
 }
 
 .profile {
   text-align: center;
-  padding: 22px 10px;
+  padding: 20px 10px;
 }
 
 .avatar {
-  width: 75px;
-  height: 75px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   margin: auto;
   background: linear-gradient(135deg,#0878b9,#7c4dff);
   display: grid;
   place-items: center;
-  font-size: 30px;
+  font-size: 31px;
   font-weight: bold;
+  box-shadow: 0 0 25px #0878b955;
 }
 
 .profile p {
@@ -66,6 +72,7 @@ main {
   background: #0d1420;
   border: 1px solid #26364c;
   border-radius: 15px;
+  scroll-behavior: smooth;
 }
 
 .message {
@@ -73,7 +80,7 @@ main {
   margin: 10px 0;
   border-radius: 13px;
   max-width: 90%;
-  line-height: 1.5;
+  line-height: 1.55;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -91,7 +98,8 @@ main {
 .controls {
   display: flex;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 11px;
+  flex-wrap: wrap;
 }
 
 input {
@@ -107,16 +115,25 @@ input {
 
 button {
   border: 0;
-  border-radius: 12px;
+  border-radius: 11px;
   background: #087fba;
   color: white;
-  padding: 12px 15px;
+  padding: 12px 14px;
   font-weight: bold;
   cursor: pointer;
 }
 
-button:disabled { opacity: .5; }
-.secondary { background: #26364c; }
+button:disabled {
+  opacity: .5;
+}
+
+.secondary {
+  background: #26364c;
+}
+
+.active {
+  background: #087f63;
+}
 
 .panel {
   margin-top: 15px;
@@ -145,6 +162,12 @@ button:disabled { opacity: .5; }
   border-radius: 8px;
 }
 
+.small-note {
+  color: #8ba0b9;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 footer {
   text-align: center;
   padding: 20px;
@@ -170,15 +193,17 @@ footer {
 
 <div class="profile">
   <div class="avatar">M</div>
-  <h2>Marcus V7</h2>
-  <p>Personal AI Assistant · Developed by CJ</p>
+  <h2>Marcus V8</h2>
+  <p>Personal AI Assistant · Created by CJ</p>
 </div>
 
 <div id="chat">
   <div class="message marcus">
-    Hello CJ. I am Marcus AI V7.
-    My persistent memory system is ready.
-    What shall we work on today?
+    Hello, Master. I'm Marcus V8.
+
+    My upgraded conversation and memory systems are ready.
+
+    What are we working on today?
   </div>
 </div>
 
@@ -188,10 +213,15 @@ footer {
 </div>
 
 <div class="controls">
-  <button class="secondary" id="voiceButton">🎙 Voice</button>
+  <button class="secondary" id="voiceButton">🎙 Start Wake Word</button>
   <button class="secondary" id="speechButton">🔊 Speech ON</button>
   <button class="secondary" id="clearButton">Clear</button>
 </div>
+
+<p class="small-note">
+  Voice command: Say "Hey Marcus" followed by your command.
+  Keep this webpage open while listening.
+</p>
 
 <div class="panel">
   <h3>Marcus Memory</h3>
@@ -208,16 +238,19 @@ footer {
 
 <div class="panel">
   <h3>Marcus System</h3>
-  <p id="systemStatus">Initializing Marcus V7...</p>
 
-  <button class="secondary" id="identityButton">IDENTITY</button>
-  <button class="secondary" id="exportButton">EXPORT MEMORY</button>
-  <button class="secondary" id="resetButton">RESET MEMORY</button>
+  <p id="systemStatus">Initializing Marcus V8...</p>
+
+  <div class="controls">
+    <button class="secondary" id="identityButton">IDENTITY</button>
+    <button class="secondary" id="exportButton">EXPORT MEMORY</button>
+    <button class="secondary" id="resetButton">RESET MEMORY</button>
+  </div>
 </div>
 
 </main>
 
-<footer>MARCUS AI V7 · Created by CJ</footer>
+<footer>MARCUS AI V8 · Created by CJ</footer>
 
 <script>
 
@@ -238,7 +271,7 @@ let history = [];
 const MAX_HISTORY = 10;
 
 // =================================
-// ANONYMOUS USER ID
+// USER ID
 // =================================
 
 function getMarcusUserId() {
@@ -255,7 +288,7 @@ function getMarcusUserId() {
 const marcusUserId = getMarcusUserId();
 
 // =================================
-// RESTORE CHAT HISTORY
+// RESTORE HISTORY
 // =================================
 
 try {
@@ -275,8 +308,31 @@ function saveHistory() {
   );
 }
 
+// Convert frontend history into Worker-compatible messages.
+function getWorkerHistory() {
+  const result = [];
+
+  history.slice(-MAX_HISTORY).forEach(item => {
+    if (item.user) {
+      result.push({
+        role: "user",
+        content: item.user
+      });
+    }
+
+    if (item.marcus) {
+      result.push({
+        role: "assistant",
+        content: item.marcus
+      });
+    }
+  });
+
+  return result;
+}
+
 // =================================
-// WORKER REQUEST HELPER
+// WORKER REQUEST
 // =================================
 
 async function workerRequest(payload) {
@@ -295,9 +351,7 @@ async function workerRequest(payload) {
 
   if (!response.ok || data.error) {
     throw new Error(
-      typeof data.error === "string"
-        ? data.error
-        : "Marcus request failed."
+      data.error || "Marcus request failed."
     );
   }
 
@@ -321,7 +375,7 @@ function addMessage(text, type) {
 }
 
 // =================================
-// DISPLAY SAVED MEMORY
+// MEMORY DISPLAY
 // =================================
 
 function showMemory() {
@@ -347,37 +401,29 @@ function showMemory() {
 
     item.appendChild(title);
     item.appendChild(content);
+
     container.appendChild(item);
   });
 }
 
 // =================================
-// LOAD MEMORY FROM CLOUDFLARE
+// LOAD MEMORY
 // =================================
 
 async function loadMemory() {
-  try {
-    const data = await workerRequest({
-      action: "get_memory"
-    });
+  const data = await workerRequest({
+    action: "get_memory"
+  });
 
-    memories = data.memory || {};
-    showMemory();
+  memories = data.memory || {};
+  showMemory();
 
-    $("systemStatus").textContent =
-      "Persistent memory loaded successfully.";
-
-  } catch (error) {
-    $("memoryList").textContent =
-      "Could not load memory: " + error.message;
-
-    $("systemStatus").textContent =
-      "Memory connection needs attention.";
-  }
+  $("systemStatus").textContent =
+    "Persistent memory loaded successfully.";
 }
 
 // =================================
-// SAVE MEMORY TO CLOUDFLARE
+// SAVE MEMORY
 // =================================
 
 async function saveMemory() {
@@ -387,13 +433,14 @@ async function saveMemory() {
   });
 
   memories = data.memory || memories;
+
   showMemory();
 
   return data;
 }
 
 // =================================
-// LEARN NEW INFORMATION
+// TEACH MARCUS
 // =================================
 
 async function teachMarcus() {
@@ -414,6 +461,8 @@ async function teachMarcus() {
   const button = $("learnButton");
   button.disabled = true;
 
+  const previous = memories[topic];
+
   try {
     memories[topic] = info;
 
@@ -422,16 +471,25 @@ async function teachMarcus() {
     $("memoryInput").value = "";
 
     $("systemStatus").textContent =
-      "Memory saved permanently.";
+      "New information saved successfully.";
 
     addMessage(
-      "I've saved this memory: " + topic + ": " + info,
+      "I've learned this information: " + topic + ": " + info,
       "marcus"
     );
 
   } catch (error) {
+    if (previous === undefined) {
+      delete memories[topic];
+    } else {
+      memories[topic] = previous;
+    }
+
+    showMemory();
+
     $("systemStatus").textContent =
       "Could not save memory: " + error.message;
+
   } finally {
     button.disabled = false;
   }
@@ -444,24 +502,27 @@ $("learnButton").addEventListener("click", teachMarcus);
 // =================================
 
 $("viewMemoryButton").addEventListener("click", async () => {
-  $("systemStatus").textContent = "Loading memories...";
+  try {
+    $("systemStatus").textContent = "Loading memories...";
 
-  await loadMemory();
+    await loadMemory();
 
-  addMessage(
-    "Here are the memories currently saved for this browser.",
-    "marcus"
-  );
+    addMessage(
+      "Here are the memories currently saved for this browser.",
+      "marcus"
+    );
+
+  } catch (error) {
+    $("systemStatus").textContent = error.message;
+  }
 });
 
 // =================================
-// FORGET ALL MEMORY
+// RESET MEMORY
 // =================================
 
 $("resetButton").addEventListener("click", async () => {
-  if (!confirm("Delete all saved Marcus memories for this browser?")) {
-    return;
-  }
+  if (!confirm("Delete all saved Marcus memories?")) return;
 
   const button = $("resetButton");
   button.disabled = true;
@@ -478,10 +539,215 @@ $("resetButton").addEventListener("click", async () => {
       "All saved memories have been deleted.";
 
   } catch (error) {
-    $("systemStatus").textContent =
-      "Could not delete memory: " + error.message;
+    $("systemStatus").textContent = error.message;
+
   } finally {
     button.disabled = false;
+  }
+});
+
+// =================================
+// VOICE SYSTEM
+// =================================
+
+let recognition = null;
+let wakeListening = false;
+let wakeArmed = false;
+let voiceRestartTimer = null;
+
+function voiceStatus(message) {
+  $("systemStatus").textContent = message;
+}
+
+function startWakeListening() {
+  const Recognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!Recognition) {
+    voiceStatus(
+      "Speech recognition is not supported by this browser."
+    );
+    return;
+  }
+
+  if (wakeListening) return;
+
+  try {
+    recognition = new Recognition();
+
+    recognition.lang = "en-ZA";
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    wakeListening = true;
+    wakeArmed = false;
+
+    $("voiceButton").textContent = "⏹ Stop Listening";
+    $("voiceButton").classList.add("active");
+
+    voiceStatus(
+      'Listening. Say "Hey Marcus" to activate me.'
+    );
+
+    recognition.onresult = event => {
+      for (
+        let i = event.resultIndex;
+        i < event.results.length;
+        i++
+      ) {
+        if (!event.results[i].isFinal) continue;
+
+        const transcript =
+          event.results[i][0].transcript.trim();
+
+        if (!transcript) continue;
+
+        const lower = transcript.toLowerCase();
+
+        if (
+          lower.includes("hey marcus") ||
+          lower.includes("hi marcus")
+        ) {
+          const command = transcript.replace(
+            /hey marcus|hi marcus/i,
+            ""
+          ).trim();
+
+          wakeArmed = true;
+
+          voiceStatus(
+            "Marcus activated. Listening for your command."
+          );
+
+          if (command) {
+            wakeArmed = false;
+            sendMessage(command);
+          }
+
+          continue;
+        }
+
+        if (wakeArmed) {
+          wakeArmed = false;
+          sendMessage(transcript);
+        }
+      }
+    };
+
+    recognition.onerror = event => {
+      if (event.error === "not-allowed") {
+        stopWakeListening();
+
+        voiceStatus(
+          "Microphone permission denied. Allow microphone access in your browser."
+        );
+
+        return;
+      }
+
+      if (event.error !== "aborted") {
+        voiceStatus(
+          "Voice recognition issue: " + event.error
+        );
+      }
+    };
+
+    recognition.onend = () => {
+      if (wakeListening) {
+        clearTimeout(voiceRestartTimer);
+
+        voiceRestartTimer = setTimeout(() => {
+          if (wakeListening) {
+            try {
+              recognition.start();
+            } catch (error) {
+              // Browser may already be restarting recognition.
+            }
+          }
+        }, 700);
+      }
+    };
+
+    recognition.start();
+
+  } catch (error) {
+    stopWakeListening();
+    voiceStatus("Could not start voice recognition.");
+  }
+}
+
+function stopWakeListening() {
+  wakeListening = false;
+  wakeArmed = false;
+
+  clearTimeout(voiceRestartTimer);
+
+  if (recognition) {
+    try {
+      recognition.stop();
+    } catch (error) {}
+  }
+
+  $("voiceButton").textContent = "🎙 Start Wake Word";
+  $("voiceButton").classList.remove("active");
+
+  voiceStatus("Voice listening stopped.");
+}
+
+$("voiceButton").addEventListener("click", () => {
+  if (wakeListening) {
+    stopWakeListening();
+  } else {
+    startWakeListening();
+  }
+});
+
+// =================================
+// SPEECH OUTPUT
+// =================================
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  utterance.rate = 1;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+
+  const voices = speechSynthesis.getVoices();
+
+  const preferred = voices.find(voice =>
+    /en-ZA|en-GB|en-US/i.test(voice.lang)
+  );
+
+  if (preferred) {
+    utterance.voice = preferred;
+  }
+
+  // Prevent the microphone from hearing Marcus speaking.
+  utterance.onstart = () => {
+    if (recognition && wakeListening) {
+      try {
+        recognition.stop();
+      } catch (error) {}
+    }
+  };
+
+  speechSynthesis.speak(utterance);
+}
+
+$("speechButton").addEventListener("click", () => {
+  speechEnabled = !speechEnabled;
+
+  $("speechButton").textContent =
+    speechEnabled ? "🔊 Speech ON" : "🔇 Speech OFF";
+
+  if (!speechEnabled && "speechSynthesis" in window) {
+    speechSynthesis.cancel();
   }
 });
 
@@ -503,68 +769,10 @@ async function sendMessage(customMessage) {
   if (!message) return;
 
   if (message.length > 3000) {
-    addMessage("Please keep your message under 3000 characters.", "marcus");
-    return;
-  }
-
-  // Recognize explicit remember commands and save them directly.
-  const rememberMatch = message.match(
-    /^remember(?: that)?\s+(.+)$/i
-  );
-
-  if (rememberMatch) {
-    busy = true;
-    button.disabled = true;
-    button.textContent = "...";
-
-    addMessage(message, "user");
-    if (!customMessage) input.value = "";
-
-    try {
-      const fact = rememberMatch[1].trim();
-
-      if (fact.length > 1000) {
-        throw new Error("That memory is too long.");
-      }
-
-      const duplicate = Object.values(memories).some(
-        value => value.toLowerCase() === fact.toLowerCase()
-      );
-
-      if (!duplicate) {
-        memories["fact_" + Date.now()] = fact;
-        await saveMemory();
-      }
-
-      const answer = duplicate
-        ? "I already have that information saved."
-        : "I've saved that information to your persistent memory.";
-
-      addMessage(answer, "marcus");
-
-      history.push({ user: message, marcus: answer });
-      history = history.slice(-MAX_HISTORY);
-      saveHistory();
-
-      if (speechEnabled) speak(answer);
-
-      $("systemStatus").textContent = "Memory saved successfully.";
-
-    } catch (error) {
-      addMessage("Memory error: " + error.message, "marcus");
-      $("systemStatus").textContent = error.message;
-    } finally {
-      busy = false;
-      button.disabled = false;
-      button.textContent = "SEND";
-    }
-
-    return;
-  }
-
-  // Recognize explicit forget commands.
-  if (/^forget everything$/i.test(message)) {
-    $("resetButton").click();
+    addMessage(
+      "Please keep your message under 3000 characters.",
+      "marcus"
+    );
     return;
   }
 
@@ -573,23 +781,31 @@ async function sendMessage(customMessage) {
   button.textContent = "...";
 
   addMessage(message, "user");
+
   if (!customMessage) input.value = "";
 
-  const thinking = addMessage("Marcus is thinking...", "marcus");
+  const thinking = addMessage(
+    "Marcus is thinking...",
+    "marcus"
+  );
 
   try {
     const data = await workerRequest({
       message,
-      history
+      history: getWorkerHistory()
     });
 
     const answer = data.reply;
 
-    if (typeof answer !== "string" || !answer.trim()) {
+    if (
+      typeof answer !== "string" ||
+      !answer.trim()
+    ) {
       throw new Error("Marcus returned an empty response.");
     }
 
     thinking.remove();
+
     addMessage(answer, "marcus");
 
     history.push({
@@ -598,24 +814,32 @@ async function sendMessage(customMessage) {
     });
 
     history = history.slice(-MAX_HISTORY);
+
     saveHistory();
 
-    if (speechEnabled) speak(answer);
+    if (speechEnabled) {
+      speak(answer);
+    }
 
     $("systemStatus").textContent =
-      "Marcus V7 is responding successfully.";
+      "Marcus V8 is responding successfully.";
 
-    $("connectionStatus").textContent = "● CONNECTED";
+    $("connectionStatus").textContent =
+      "● CONNECTED";
 
   } catch (error) {
     thinking.remove();
 
-    addMessage("Connection error: " + error.message, "marcus");
+    addMessage(
+      "Connection error: " + error.message,
+      "marcus"
+    );
 
     $("systemStatus").textContent =
       "Connection needs attention.";
 
-    $("connectionStatus").textContent = "● ERROR";
+    $("connectionStatus").textContent =
+      "● ERROR";
 
   } finally {
     busy = false;
@@ -628,72 +852,16 @@ async function sendMessage(customMessage) {
 // SEND EVENTS
 // =================================
 
-$("sendButton").addEventListener("click", () => sendMessage());
+$("sendButton").addEventListener(
+  "click",
+  () => sendMessage()
+);
 
 $("input").addEventListener("keydown", event => {
-  if (event.key === "Enter") sendMessage();
-});
-
-// =================================
-// SPEECH
-// =================================
-
-function speak(text) {
-  if (!("speechSynthesis" in window)) return;
-
-  speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 1;
-  utterance.pitch = 0.9;
-
-  speechSynthesis.speak(utterance);
-}
-
-$("speechButton").addEventListener("click", () => {
-  speechEnabled = !speechEnabled;
-
-  $("speechButton").textContent =
-    speechEnabled ? "🔊 Speech ON" : "🔇 Speech OFF";
-
-  if (!speechEnabled && "speechSynthesis" in window) {
-    speechSynthesis.cancel();
-  }
-});
-
-// =================================
-// VOICE INPUT
-// =================================
-
-function startVoice() {
-  const Recognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if (!Recognition) {
-    $("systemStatus").textContent =
-      "Voice recognition unavailable in this browser.";
-    return;
-  }
-
-  const recognition = new Recognition();
-
-  recognition.lang = "en-ZA";
-  recognition.interimResults = false;
-
-  recognition.onresult = event => {
-    $("input").value = event.results[0][0].transcript;
+  if (event.key === "Enter") {
     sendMessage();
-  };
-
-  recognition.onerror = () => {
-    $("systemStatus").textContent = "Voice recognition error.";
-  };
-
-  recognition.start();
-}
-
-$("voiceButton").addEventListener("click", startVoice);
+  }
+});
 
 // =================================
 // IDENTITY
@@ -701,7 +869,7 @@ $("voiceButton").addEventListener("click", startVoice);
 
 $("identityButton").addEventListener("click", () => {
   addMessage(
-    "I am Marcus AI V7, developed by CJ. I use Cloudflare Workers AI and persistent KV memory.",
+    "I am Marcus V8, an AI assistant created by CJ. I use Cloudflare Workers AI, conversation context and persistent KV memory.",
     "marcus"
   );
 });
@@ -714,10 +882,14 @@ $("clearButton").addEventListener("click", () => {
   if (!confirm("Clear conversation history?")) return;
 
   $("chat").innerHTML = "";
+
   history = [];
   saveHistory();
 
-  addMessage("Conversation cleared. What shall we work on?", "marcus");
+  addMessage(
+    "Conversation cleared. What shall we work on?",
+    "marcus"
+  );
 });
 
 // =================================
@@ -744,7 +916,8 @@ $("exportButton").addEventListener("click", async () => {
 
     URL.revokeObjectURL(url);
 
-    $("systemStatus").textContent = "Memory export created.";
+    $("systemStatus").textContent =
+      "Memory export created.";
 
   } catch (error) {
     $("systemStatus").textContent =
@@ -764,14 +937,16 @@ history.forEach(item => {
 });
 
 // =================================
-// CHECK CONNECTION
+// CONNECTION CHECK
 // =================================
 
 async function checkConnection() {
   try {
     const response = await fetch(WORKER_URL);
 
-    if (!response.ok) throw new Error("Worker unavailable.");
+    if (!response.ok) {
+      throw new Error("Worker unavailable.");
+    }
 
     const result = await response.text();
 
@@ -786,9 +961,12 @@ async function checkConnection() {
     await loadMemory();
 
   } catch (error) {
-    $("connectionStatus").textContent = "● OFFLINE";
+    $("connectionStatus").textContent =
+      "● OFFLINE";
+
     $("systemStatus").textContent =
-      "Could not reach Cloudflare Worker.";
+      "Could not reach Cloudflare Worker: " +
+      error.message;
   }
 }
 
@@ -799,6 +977,7 @@ async function checkConnection() {
 checkConnection();
 
 </script>
+
 </body>
   </html>
   
