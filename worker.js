@@ -1,3 +1,4 @@
+
 export default {
   async fetch(request, env) {
     const corsHeaders = {
@@ -25,6 +26,7 @@ export default {
 
     if (request.method === "GET") {
       return new Response("Marcus V6 is online.", {
+        status: 200,
         headers: corsHeaders
       });
     }
@@ -38,7 +40,7 @@ export default {
     try {
       if (!env.AI) {
         return jsonResponse({
-          error: "Workers AI binding is missing. Check your AI binding."
+          error: "Workers AI binding AI is missing."
         }, 500);
       }
 
@@ -67,15 +69,19 @@ export default {
             {
               role: "system",
               content: `
-You are Marcus V6, a helpful AI assistant.
+You are Marcus V6, an intelligent AI assistant.
 
 Your name is Marcus.
 
-Be intelligent, friendly, clear and helpful.
-Understand the user's messages.
-Respond naturally and conversationally.
-Give useful explanations and practical assistance.
-Keep answers easy to understand.
+PERSONALITY:
+- Friendly, intelligent and respectful.
+- Speak naturally and conversationally.
+- Understand questions before answering.
+- Give clear and useful explanations.
+- Help with learning, creativity, coding and problem solving.
+- Avoid unnecessary repetition.
+- Admit when you don't know something.
+- Keep answers relevant to the user's question.
 `
             },
             {
@@ -89,17 +95,35 @@ Keep answers easy to understand.
         }
       );
 
-      const reply = result?.response;
+      // Extract the generated response
+      let reply = "";
 
-      if (!reply) {
+      if (typeof result?.response === "string") {
+        reply = result.response;
+      } else if (
+        typeof result?.choices?.[0]?.message?.content === "string"
+      ) {
+        reply = result.choices[0].message.content;
+      } else if (
+        typeof result?.output_text === "string"
+      ) {
+        reply = result.output_text;
+      } else if (
+        typeof result?.result?.response === "string"
+      ) {
+        reply = result.result.response;
+      }
+
+      if (!reply.trim()) {
         return jsonResponse({
-          error: "Marcus received no response. Please try again."
+          error: "AI returned no readable text.",
+          responseFormat: Object.keys(result || {})
         }, 502);
       }
 
       return jsonResponse({
         success: true,
-        reply: reply
+        reply: reply.trim()
       });
 
     } catch (error) {
@@ -110,4 +134,4 @@ Keep answers easy to understand.
     }
   }
 };
-          
+    
