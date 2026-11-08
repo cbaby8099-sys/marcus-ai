@@ -1,4 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marcus AI | CJ Technologies</title>
 
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #080b14;
+  color: white;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.app {
+  width: 100%;
+  max-width: 650px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+header {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #263047;
+}
+
+header h1 {
+  color: #54d9ff;
+  margin: 5px;
+}
+
+.status {
+  color: #70e6a0;
+  font-size: 12px;
+}
+
+#chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px 5px;
+}
+
+.message {
+  padding: 12px 15px;
+  margin: 10px 0;
+  border-radius: 14px;
+  max-width: 85%;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.user {
+  background: #174b72;
+  margin-left: auto;
+}
+
+.marcus {
+  background: #20283a;
+  margin-right: auto;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #35435c;
+  background: #111827;
+  color: white;
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  background: #16a8d4;
+  color: white;
+  font-weight: bold;
+}
+
+.clear {
+  background: #713b48;
+  margin-top: 8px;
+}
+
+footer {
+  text-align: center;
+  color: #8491a8;
+  font-size: 11px;
+  padding: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+  <h1>Marcus AI</h1>
+  <div class="status">●
 <!DOCTYPE html>
 <html lang="en">
 <head>
