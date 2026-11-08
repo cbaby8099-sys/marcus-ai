@@ -1,0 +1,12 @@
+
+{
+  "name": "Marcus AI",
+  "short_name": "Marcus",
+  "description": "Your personal AI assistant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080b12",
+  "theme_color": "#080b12"
+}
