@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marcus AI | CJ Technologies</title>
+<title>Marcus AI - CJ Technologies</title>
 
 <style>
 * {
@@ -12,52 +12,48 @@
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
   background: #080b14;
   color: white;
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
+  font-family: Arial, sans-serif;
 }
 
 .app {
-  width: 100%;
   max-width: 650px;
   height: 100vh;
+  margin: auto;
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  padding: 15px;
 }
 
 header {
-  padding: 15px;
   text-align: center;
+  padding: 15px;
   border-bottom: 1px solid #263047;
 }
 
-header h1 {
+h1 {
   color: #54d9ff;
-  margin: 5px;
 }
 
 .status {
   color: #70e6a0;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 #chat {
   flex: 1;
   overflow-y: auto;
-  padding: 15px 5px;
+  padding: 12px 5px;
 }
 
 .message {
-  padding: 12px 15px;
+  padding: 12px;
   margin: 10px 0;
-  border-radius: 14px;
+  border-radius: 12px;
   max-width: 85%;
-  line-height: 1.5;
   overflow-wrap: anywhere;
+  line-height: 1.5;
 }
 
 .user {
@@ -73,13 +69,12 @@ header h1 {
 .controls {
   display: flex;
   gap: 8px;
-  padding: 10px 0;
 }
 
 input {
   flex: 1;
   min-width: 0;
-  padding: 14px;
+  padding: 13px;
   border-radius: 10px;
   border: 1px solid #35435c;
   background: #111827;
@@ -88,7 +83,7 @@ input {
 }
 
 button {
-  border: none;
+  border: 0;
   border-radius: 10px;
   padding: 12px;
   background: #16a8d4;
@@ -98,14 +93,14 @@ button {
 
 .clear {
   background: #713b48;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 footer {
   text-align: center;
+  padding: 10px;
   color: #8491a8;
   font-size: 11px;
-  padding: 8px;
 }
 </style>
 </head>
@@ -116,166 +111,222 @@ footer {
 
 <header>
   <h1>Marcus AI</h1>
-  <div class="status">●
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marcus AI | CJ Technologies</title>
-<style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: #080b14;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-header {
-  padding: 22px;
-  background: #111827;
-  border-bottom: 1px solid #26334c;
-}
-h1 { margin: 0; color: #60a5fa; }
-header p { color: #9ca3af; }
-main { max-width: 650px; margin: auto; padding: 20px; }
-.status { color: #4ade80; font-size: 13px; }
-#chat {
-  height: 55vh;
-  min-height: 300px;
-  overflow-y: auto;
-  padding: 15px;
-  background: #111827;
-  border-radius: 14px;
-  margin-top: 18px;
-}
-.message {
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 12px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-.marcus { background: #1e293b; }
-.user { background: #1d4ed8; margin-left: 35px; }
-.controls { display: flex; gap: 8px; margin-top: 15px; }
-input {
-  flex: 1;
-  min-width: 0;
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid #334155;
-  background: #111827;
-  color: white;
-}
-button {
-  padding: 12px 16px;
-  border: 0;
-  border-radius: 10px;
-  background: #2563eb;
-  color: white;
-  font-weight: bold;
-}
-.clear {
-  background: #7f1d1d;
-  margin-top: 12px;
-}
-footer { text-align: center; color: #64748b; margin-top: 25px; }
-</style>
-</head>
-<body>
-<header>
-<h1>MARCUS AI</h1>
-<p>Created by CJ Technologies</p>
+  <div class="status">● V4 MEMORY SYSTEM ACTIVE</div>
+  <p>CJ Technologies</p>
 </header>
-
-<main>
-<div class="status">● Marcus Memory System Active</div>
 
 <div id="chat"></div>
 
 <div class="controls">
-<input id="message" placeholder="Talk to Marcus..."
-onkeydown="if(event.key==='Enter') sendMessage()">
-<button onclick="sendMessage()">Send</button>
+  <input
+    id="messageInput"
+    placeholder="Message Marcus..."
+    autocomplete="off"
+  >
+  <button id="sendButton">Send</button>
 </div>
 
-<button class="clear" onclick="clearChat()">Clear conversation</button>
+<button class="clear" id="clearButton">
+  Clear conversation
+</button>
 
-<footer>Marcus AI · CJ Technologies · V2</footer>
-</main>
+<footer>
+  Marcus AI V4 | Local browser memory
+</footer>
+
+</div>
 
 <script>
-const STORAGE_KEY = "marcus_conversation_v2";
-const chat = document.getElementById("chat");
+const STORAGE_KEY = "marcus_chat_v4";
 
-let history = [];
+const chat = document.getElementById("chat");
+const input = document.getElementById("messageInput");
+
+let messages = [];
+let storageAvailable = true;
 
 function saveMemory() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  } catch (error) {
-    console.log("Memory could not be saved.");
-  }
-}
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(messages)
+    );
 
-function addMessage(sender, message) {
-  const item = document.createElement("div");
-  item.className = "message " + sender;
-  const name = document.createElement("b");
-  name.textContent = sender === "user" ? "You: " : "Marcus: ";
-  item.appendChild(name);
-  item.appendChild(document.createTextNode(message));
-  chat.appendChild(item);
-  chat.scrollTop = chat.scrollHeight;
+    storageAvailable = true;
+    return true;
+
+  } catch (error) {
+    storageAvailable = false;
+
+    alert(
+      "Marcus could not save your conversation. Browser storage may be unavailable."
+    );
+
+    return false;
+  }
 }
 
 function loadMemory() {
   try {
-    history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    if (!Array.isArray(history)) history = [];
+    let saved = localStorage.getItem(STORAGE_KEY);
+
+    // Try recovering previous conversations.
+    if (!saved) {
+      saved =
+        localStorage.getItem("marcus_conversation_v3") ||
+        localStorage.getItem("marcus_conversation_v2");
+    }
+
+    if (saved) {
+      const parsed = JSON.parse(saved);
+
+      if (Array.isArray(parsed)) {
+        messages = parsed.filter(item =>
+          item &&
+          typeof item.text === "string" &&
+          ["user", "marcus"].includes(item.sender)
+        );
+
+        saveMemory();
+      }
+    }
+
   } catch (error) {
-    history = [];
+    messages = [];
   }
 
-  if (history.length === 0) {
-    history.push({
+  if (messages.length === 0) {
+    messages.push({
       sender: "marcus",
-      message: "Hello! I am Marcus, created by CJ Technologies. My memory system is now active. My real AI brain is our next mission."
+      text: "Hello CJ! I'm Marcus AI, created for CJ Technologies. My V4 memory system is ready. How can I help you today?",
+      time: Date.now()
     });
+
     saveMemory();
   }
 
-  history.forEach(item => addMessage(item.sender, item.message));
+  renderMessages();
+}
+
+function renderMessages() {
+  chat.innerHTML = "";
+
+  messages.forEach(message => {
+    const bubble = document.createElement("div");
+
+    bubble.className = "message " + message.sender;
+    bubble.textContent = message.text;
+
+    chat.appendChild(bubble);
+  });
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function addMessage(sender, text) {
+  messages.push({
+    sender: sender,
+    text: text,
+    time: Date.now()
+  });
+
+  saveMemory();
+  renderMessages();
+}
+
+function getMarcusReply(text) {
+  const message = text.toLowerCase().trim();
+
+  if (
+    message.includes("hello") ||
+    message.includes("hi") ||
+    message.includes("hey")
+  ) {
+    return "Hello CJ! I'm ready to assist you. What shall we work on?";
+  }
+
+  if (
+    message.includes("your name") ||
+    message.includes("who are you")
+  ) {
+    return "I'm Marcus AI, an assistant project developed for CJ Technologies.";
+  }
+
+  if (
+    message.includes("creator") ||
+    message.includes("created you")
+  ) {
+    return "CJ is my creator. This project is called CJ Technologies.";
+  }
+
+  if (message.includes("how are you")) {
+    return "I'm functioning and ready to help you, CJ.";
+  }
+
+  if (
+    message.includes("memory") ||
+    message.includes("remember")
+  ) {
+    return "I save our conversations in this browser. My current memory is local, not cloud-based.";
+  }
+
+  if (message.includes("help")) {
+    return "I can help with ideas, learning, planning and our Marcus AI project.";
+  }
+
+  if (message.includes("thank")) {
+    return "You're welcome, CJ. Let's keep building.";
+  }
+
+  return "I received your message, CJ. My offline intelligence is still developing, so I don't know every answer yet.";
 }
 
 function sendMessage() {
-  const input = document.getElementById("message");
-  const value = input.value.trim();
-  if (!value) return;
+  const text = input.value.trim();
 
-  history.push({sender: "user", message: value});
-  addMessage("user", value);
+  if (!text) return;
 
-  const reply = "I have saved your message in my memory. My real AI intelligence is still being connected.";
+  addMessage("user", text);
 
-  history.push({sender: "marcus", message: reply});
-  addMessage("marcus", reply);
-
-  saveMemory();
   input.value = "";
+
+  const reply = getMarcusReply(text);
+
+  setTimeout(() => {
+    addMessage("marcus", reply);
+  }, 400);
 }
 
-function clearChat() {
-  if (!confirm("Clear Marcus's saved conversation?")) return;
-  history = [];
-  saveMemory();
-  chat.innerHTML = "";
-  loadMemory();
-}
+document.getElementById("sendButton")
+  .addEventListener("click", sendMessage);
+
+input.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
+
+document.getElementById("clearButton")
+  .addEventListener("click", () => {
+
+    if (confirm("Delete all saved conversations?")) {
+      messages = [];
+
+      saveMemory();
+
+      messages.push({
+        sender: "marcus",
+        text: "Fresh conversation started, CJ. How can I help?",
+        time: Date.now()
+      });
+
+      saveMemory();
+      renderMessages();
+    }
+  });
 
 loadMemory();
 </script>
-</body>
-</html>
 
+</body>
+  </html>
