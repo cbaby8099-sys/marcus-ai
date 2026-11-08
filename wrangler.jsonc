@@ -4,5 +4,11 @@
   "compatibility_date": "2026-11-08",
   "ai": {
     "binding": "AI"
-  }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "MARCUS_MEMORY",
+      "id": "758e2e7e9dd34b81a3eb68009a0aa5ee"
+    }
+  ]
 }
