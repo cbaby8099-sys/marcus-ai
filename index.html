@@ -1,16 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080b12">
-
-<title>Marcus AI V6</title>
+<title>Marcus AI V7</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -28,15 +26,9 @@ header {
   align-items: center;
 }
 
-header h2 {
-  margin: 0;
-  color: #55c8ff;
-}
+header h2 { margin: 0; color: #55c8ff; }
 
-.status {
-  font-size: 12px;
-  color: #55df9b;
-}
+.status { font-size: 12px; color: #55df9b; }
 
 main {
   max-width: 750px;
@@ -123,13 +115,8 @@ button {
   cursor: pointer;
 }
 
-button:disabled {
-  opacity: .5;
-}
-
-.secondary {
-  background: #26364c;
-}
+button:disabled { opacity: .5; }
+.secondary { background: #26364c; }
 
 .panel {
   margin-top: 15px;
@@ -144,11 +131,18 @@ button:disabled {
   color: #55c8ff;
 }
 
-#memoryList,
-#systemStatus {
+#memoryList, #systemStatus {
   font-size: 13px;
   color: #b8c9dc;
   overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+
+.memory-entry {
+  padding: 9px;
+  margin: 7px 0;
+  background: #0d1420;
+  border-radius: 8px;
 }
 
 footer {
@@ -159,14 +153,8 @@ footer {
 }
 
 @media(max-width:450px) {
-  main {
-    padding: 10px;
-  }
-
-  button {
-    padding: 11px;
-    font-size: 12px;
-  }
+  main { padding: 10px; }
+  button { padding: 11px; font-size: 12px; }
 }
 </style>
 </head>
@@ -174,107 +162,67 @@ footer {
 <body>
 
 <header>
-<h2>MARCUS AI</h2>
-<span class="status" id="connectionStatus">
-● CHECKING
-</span>
+  <h2>MARCUS AI</h2>
+  <span class="status" id="connectionStatus">● CHECKING</span>
 </header>
 
 <main>
 
 <div class="profile">
-<div class="avatar">M</div>
-<h2>Marcus V6</h2>
-<p>Personal AI Assistant · Developed by CJ</p>
+  <div class="avatar">M</div>
+  <h2>Marcus V7</h2>
+  <p>Personal AI Assistant · Developed by CJ</p>
 </div>
 
 <div id="chat">
-<div class="message marcus">
-Hello CJ. I am Marcus AI V6.
-What shall we work on today?
-</div>
-</div>
-
-<div class="controls">
-<input
-id="input"
-placeholder="Talk to Marcus..."
-autocomplete="off"
->
-<button id="sendButton">SEND</button>
+  <div class="message marcus">
+    Hello CJ. I am Marcus AI V7.
+    My persistent memory system is ready.
+    What shall we work on today?
+  </div>
 </div>
 
 <div class="controls">
-<button class="secondary" id="voiceButton">
-🎙 Voice
-</button>
+  <input id="input" placeholder="Talk to Marcus..." autocomplete="off">
+  <button id="sendButton">SEND</button>
+</div>
 
-<button class="secondary" id="speechButton">
-🔊 Speech ON
-</button>
-
-<button class="secondary" id="clearButton">
-Clear
-</button>
+<div class="controls">
+  <button class="secondary" id="voiceButton">🎙 Voice</button>
+  <button class="secondary" id="speechButton">🔊 Speech ON</button>
+  <button class="secondary" id="clearButton">Clear</button>
 </div>
 
 <div class="panel">
+  <h3>Marcus Memory</h3>
 
-<h3>Marcus Memory</h3>
+  <input id="memoryInput" placeholder="topic: information">
 
-<input
-id="memoryInput"
-placeholder="topic: information"
->
+  <div class="controls">
+    <button id="learnButton">LEARN</button>
+    <button class="secondary" id="viewMemoryButton">VIEW MEMORY</button>
+  </div>
 
-<div class="controls">
-
-<button id="learnButton">
-LEARN
-</button>
-
-<button class="secondary" id="viewMemoryButton">
-VIEW MEMORY
-</button>
-
-</div>
-
-<div id="memoryList"></div>
-
+  <div id="memoryList">Loading saved memories...</div>
 </div>
 
 <div class="panel">
+  <h3>Marcus System</h3>
+  <p id="systemStatus">Initializing Marcus V7...</p>
 
-<h3>Marcus System</h3>
-
-<p id="systemStatus">
-Initializing Marcus V6...
-</p>
-
-<button class="secondary" id="identityButton">
-IDENTITY
-</button>
-
-<button class="secondary" id="exportButton">
-EXPORT MEMORY
-</button>
-
-<button class="secondary" id="resetButton">
-RESET MEMORY
-</button>
-
+  <button class="secondary" id="identityButton">IDENTITY</button>
+  <button class="secondary" id="exportButton">EXPORT MEMORY</button>
+  <button class="secondary" id="resetButton">RESET MEMORY</button>
 </div>
 
 </main>
 
-<footer>
-MARCUS AI V6 · Created by CJ
-</footer>
+<footer>MARCUS AI V7 · Created by CJ</footer>
 
 <script>
 
 // =================================
-// MARCUS CONFIGURATION
+// CONFIGURATION
 // =================================
 
 const WORKER_URL =
@@ -283,56 +231,77 @@ const WORKER_URL =
 const $ = id => document.getElementById(id);
 
 let speechEnabled = true;
+let busy = false;
 let memories = {};
 let history = [];
 
 const MAX_HISTORY = 10;
 
 // =================================
-// LOAD SAVED MEMORY
+// ANONYMOUS USER ID
 // =================================
 
-try {
-  memories = JSON.parse(
-    localStorage.getItem("marcus_v6_memory") || "{}"
-  );
-} catch(e) {
-  memories = {};
+function getMarcusUserId() {
+  let id = localStorage.getItem("marcus_user_id");
+
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("marcus_user_id", id);
+  }
+
+  return id;
 }
+
+const marcusUserId = getMarcusUserId();
+
+// =================================
+// RESTORE CHAT HISTORY
+// =================================
 
 try {
   history = JSON.parse(
-    sessionStorage.getItem("marcus_v6_history") || "[]"
+    sessionStorage.getItem("marcus_v7_history") || "[]"
   );
-} catch(e) {
+
+  if (!Array.isArray(history)) history = [];
+} catch {
   history = [];
 }
 
-// =================================
-// SAVE FUNCTIONS
-// =================================
-
-function saveMemory() {
-  try {
-    localStorage.setItem(
-      "marcus_v6_memory",
-      JSON.stringify(memories)
-    );
-  } catch(e) {
-    $("systemStatus").textContent =
-      "Could not save memory.";
-  }
+function saveHistory() {
+  sessionStorage.setItem(
+    "marcus_v7_history",
+    JSON.stringify(history)
+  );
 }
 
-function saveHistory() {
-  try {
-    sessionStorage.setItem(
-      "marcus_v6_history",
-      JSON.stringify(history)
+// =================================
+// WORKER REQUEST HELPER
+// =================================
+
+async function workerRequest(payload) {
+  const response = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      ...payload,
+      userId: marcusUserId
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || data.error) {
+    throw new Error(
+      typeof data.error === "string"
+        ? data.error
+        : "Marcus request failed."
     );
-  } catch(e) {
-    console.error(e);
   }
+
+  return data;
 }
 
 // =================================
@@ -340,169 +309,287 @@ function saveHistory() {
 // =================================
 
 function addMessage(text, type) {
-
   const div = document.createElement("div");
 
   div.className = "message " + type;
-
   div.textContent = text;
 
   $("chat").appendChild(div);
-
-  $("chat").scrollTop =
-    $("chat").scrollHeight;
+  $("chat").scrollTop = $("chat").scrollHeight;
 
   return div;
 }
 
 // =================================
-// MEMORY CONTEXT
+// DISPLAY SAVED MEMORY
 // =================================
 
-function buildContext(message) {
+function showMemory() {
+  const container = $("memoryList");
+  container.innerHTML = "";
 
-  const memoryEntries =
-    Object.entries(memories);
+  const entries = Object.entries(memories);
 
-  const memoryContext =
-    memoryEntries.length
-    ? memoryEntries.map(
-        ([key,value]) => key + ": " + value
-      ).join("\n")
-    : "No saved lessons.";
-
-  const recentHistory = history
-    .slice(-MAX_HISTORY)
-    .map(item =>
-      "CJ: " + item.user +
-      "\nMarcus: " + item.marcus
-    )
-    .join("\n\n");
-
-  return `
-You are Marcus AI V6.
-Your creator is CJ.
-
-Use the following saved information
-to personalize your assistance.
-
-SAVED MEMORY:
-${memoryContext}
-
-RECENT CONVERSATION:
-${recentHistory}
-
-CURRENT MESSAGE FROM CJ:
-${message}
-
-Respond naturally and helpfully.
-`;
-}
-
-// =================================
-// SEND MESSAGE TO MARCUS
-// =================================
-
-async function sendMessage() {
-
-  const input = $("input");
-
-  const button = $("sendButton");
-
-  const message = input.value.trim();
-
-  if (!message || button.disabled) return;
-
-  if (message.length > 3000) {
-    addMessage(
-      "Please keep your message under 3000 characters.",
-      "marcus"
-    );
+  if (!entries.length) {
+    container.textContent = "No saved memories yet.";
     return;
   }
 
-  addMessage(message, "user");
+  entries.forEach(([key, value]) => {
+    const item = document.createElement("div");
+    item.className = "memory-entry";
 
-  input.value = "";
+    const title = document.createElement("strong");
+    title.textContent = key + ": ";
 
-  button.disabled = true;
+    const content = document.createElement("span");
+    content.textContent = value;
 
-  button.textContent = "...";
+    item.appendChild(title);
+    item.appendChild(content);
+    container.appendChild(item);
+  });
+}
 
-  const thinking = addMessage(
-    "Marcus is thinking...",
-    "marcus"
-  );
+// =================================
+// LOAD MEMORY FROM CLOUDFLARE
+// =================================
 
+async function loadMemory() {
   try {
-
-    const contextualMessage =
-      buildContext(message);
-
-    const response = await fetch(WORKER_URL, {
-
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json"
-      },
-
-      body: JSON.stringify({
-        message: contextualMessage
-      })
-
+    const data = await workerRequest({
+      action: "get_memory"
     });
 
-    let data;
+    memories = data.memory || {};
+    showMemory();
+
+    $("systemStatus").textContent =
+      "Persistent memory loaded successfully.";
+
+  } catch (error) {
+    $("memoryList").textContent =
+      "Could not load memory: " + error.message;
+
+    $("systemStatus").textContent =
+      "Memory connection needs attention.";
+  }
+}
+
+// =================================
+// SAVE MEMORY TO CLOUDFLARE
+// =================================
+
+async function saveMemory() {
+  const data = await workerRequest({
+    action: "save_memory",
+    memory: memories
+  });
+
+  memories = data.memory || memories;
+  showMemory();
+
+  return data;
+}
+
+// =================================
+// LEARN NEW INFORMATION
+// =================================
+
+async function teachMarcus() {
+  const value = $("memoryInput").value.trim();
+  const split = value.indexOf(":");
+
+  if (split < 1) {
+    $("systemStatus").textContent =
+      "Use format: topic: information";
+    return;
+  }
+
+  const topic = value.substring(0, split).trim();
+  const info = value.substring(split + 1).trim();
+
+  if (!topic || !info) return;
+
+  const button = $("learnButton");
+  button.disabled = true;
+
+  try {
+    memories[topic] = info;
+
+    await saveMemory();
+
+    $("memoryInput").value = "";
+
+    $("systemStatus").textContent =
+      "Memory saved permanently.";
+
+    addMessage(
+      "I've saved this memory: " + topic + ": " + info,
+      "marcus"
+    );
+
+  } catch (error) {
+    $("systemStatus").textContent =
+      "Could not save memory: " + error.message;
+  } finally {
+    button.disabled = false;
+  }
+}
+
+$("learnButton").addEventListener("click", teachMarcus);
+
+// =================================
+// VIEW MEMORY
+// =================================
+
+$("viewMemoryButton").addEventListener("click", async () => {
+  $("systemStatus").textContent = "Loading memories...";
+
+  await loadMemory();
+
+  addMessage(
+    "Here are the memories currently saved for this browser.",
+    "marcus"
+  );
+});
+
+// =================================
+// FORGET ALL MEMORY
+// =================================
+
+$("resetButton").addEventListener("click", async () => {
+  if (!confirm("Delete all saved Marcus memories for this browser?")) {
+    return;
+  }
+
+  const button = $("resetButton");
+  button.disabled = true;
+
+  try {
+    await workerRequest({
+      action: "delete_memory"
+    });
+
+    memories = {};
+    showMemory();
+
+    $("systemStatus").textContent =
+      "All saved memories have been deleted.";
+
+  } catch (error) {
+    $("systemStatus").textContent =
+      "Could not delete memory: " + error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+
+// =================================
+// SEND MESSAGE
+// =================================
+
+async function sendMessage(customMessage) {
+  if (busy) return;
+
+  const input = $("input");
+  const button = $("sendButton");
+
+  const message =
+    typeof customMessage === "string"
+      ? customMessage.trim()
+      : input.value.trim();
+
+  if (!message) return;
+
+  if (message.length > 3000) {
+    addMessage("Please keep your message under 3000 characters.", "marcus");
+    return;
+  }
+
+  // Recognize explicit remember commands and save them directly.
+  const rememberMatch = message.match(
+    /^remember(?: that)?\s+(.+)$/i
+  );
+
+  if (rememberMatch) {
+    busy = true;
+    button.disabled = true;
+    button.textContent = "...";
+
+    addMessage(message, "user");
+    if (!customMessage) input.value = "";
 
     try {
-      data = await response.json();
-    } catch(e) {
-      throw new Error(
-        "Invalid response from Cloudflare."
+      const fact = rememberMatch[1].trim();
+
+      if (fact.length > 1000) {
+        throw new Error("That memory is too long.");
+      }
+
+      const duplicate = Object.values(memories).some(
+        value => value.toLowerCase() === fact.toLowerCase()
       );
+
+      if (!duplicate) {
+        memories["fact_" + Date.now()] = fact;
+        await saveMemory();
+      }
+
+      const answer = duplicate
+        ? "I already have that information saved."
+        : "I've saved that information to your persistent memory.";
+
+      addMessage(answer, "marcus");
+
+      history.push({ user: message, marcus: answer });
+      history = history.slice(-MAX_HISTORY);
+      saveHistory();
+
+      if (speechEnabled) speak(answer);
+
+      $("systemStatus").textContent = "Memory saved successfully.";
+
+    } catch (error) {
+      addMessage("Memory error: " + error.message, "marcus");
+      $("systemStatus").textContent = error.message;
+    } finally {
+      busy = false;
+      button.disabled = false;
+      button.textContent = "SEND";
     }
 
-    if (!response.ok) {
+    return;
+  }
 
-      throw new Error(
-        typeof data.error === "string"
-        ? data.error
-        : data.error?.message ||
-          "API connection failed."
-      );
+  // Recognize explicit forget commands.
+  if (/^forget everything$/i.test(message)) {
+    $("resetButton").click();
+    return;
+  }
 
-    }
+  busy = true;
+  button.disabled = true;
+  button.textContent = "...";
 
-    if (data.error) {
+  addMessage(message, "user");
+  if (!customMessage) input.value = "";
 
-      throw new Error(
-        typeof data.error === "string"
-        ? data.error
-        : data.error.message
-      );
+  const thinking = addMessage("Marcus is thinking...", "marcus");
 
-    }
+  try {
+    const data = await workerRequest({
+      message,
+      history
+    });
 
-    const answer =
-      data.reply ||
-      data.output_text ||
-      data.output?.flatMap(
-        item => item.content || []
-      ).find(
-        item => item.type === "output_text"
-      )?.text;
+    const answer = data.reply;
 
-    if (!answer) {
-
-      throw new Error(
-        "Marcus returned an empty response."
-      );
-
+    if (typeof answer !== "string" || !answer.trim()) {
+      throw new Error("Marcus returned an empty response.");
     }
 
     thinking.remove();
-
     addMessage(answer, "marcus");
 
     history.push({
@@ -511,391 +598,198 @@ async function sendMessage() {
     });
 
     history = history.slice(-MAX_HISTORY);
-
     saveHistory();
 
-    if (speechEnabled) {
-      speak(answer);
-    }
+    if (speechEnabled) speak(answer);
 
     $("systemStatus").textContent =
-      "Marcus AI is responding successfully.";
+      "Marcus V7 is responding successfully.";
 
-    $("connectionStatus").textContent =
-      "● CONNECTED";
+    $("connectionStatus").textContent = "● CONNECTED";
 
-  } catch(error) {
-
+  } catch (error) {
     thinking.remove();
 
-    addMessage(
-      "Connection error: " + error.message,
-      "marcus"
-    );
+    addMessage("Connection error: " + error.message, "marcus");
 
     $("systemStatus").textContent =
       "Connection needs attention.";
 
-    $("connectionStatus").textContent =
-      "● ERROR";
+    $("connectionStatus").textContent = "● ERROR";
 
   } finally {
-
+    busy = false;
     button.disabled = false;
-
     button.textContent = "SEND";
-
   }
 }
 
 // =================================
-// ENTER TO SEND
+// SEND EVENTS
 // =================================
 
-$("input").addEventListener(
-  "keydown",
-  event => {
-    if (event.key === "Enter") {
-      sendMessage();
-    }
-  }
-);
+$("sendButton").addEventListener("click", () => sendMessage());
 
-$("sendButton").addEventListener(
-  "click",
-  sendMessage
-);
+$("input").addEventListener("keydown", event => {
+  if (event.key === "Enter") sendMessage();
+});
 
 // =================================
-// SPEECH SYSTEM
+// SPEECH
 // =================================
 
 function speak(text) {
-
-  if (!("speechSynthesis" in window)) {
-    return;
-  }
+  if (!("speechSynthesis" in window)) return;
 
   speechSynthesis.cancel();
 
-  const utterance =
-    new SpeechSynthesisUtterance(text);
-
+  const utterance = new SpeechSynthesisUtterance(text);
   utterance.rate = 1;
-
   utterance.pitch = 0.9;
 
   speechSynthesis.speak(utterance);
 }
 
-$("speechButton").addEventListener(
-  "click",
-  () => {
+$("speechButton").addEventListener("click", () => {
+  speechEnabled = !speechEnabled;
 
-    speechEnabled = !speechEnabled;
+  $("speechButton").textContent =
+    speechEnabled ? "🔊 Speech ON" : "🔇 Speech OFF";
 
-    $("speechButton").textContent =
-      speechEnabled
-      ? "🔊 Speech ON"
-      : "🔇 Speech OFF";
-
-    $("systemStatus").textContent =
-      "Speech " +
-      (speechEnabled ? "enabled." : "disabled.");
-
-    if (!speechEnabled &&
-        "speechSynthesis" in window) {
-      speechSynthesis.cancel();
-    }
-
+  if (!speechEnabled && "speechSynthesis" in window) {
+    speechSynthesis.cancel();
   }
-);
+});
 
 // =================================
 // VOICE INPUT
 // =================================
 
 function startVoice() {
-
   const Recognition =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
 
   if (!Recognition) {
-
     $("systemStatus").textContent =
       "Voice recognition unavailable in this browser.";
-
     return;
-
   }
 
   const recognition = new Recognition();
 
   recognition.lang = "en-ZA";
-
   recognition.interimResults = false;
 
   recognition.onresult = event => {
-
-    $("input").value =
-      event.results[0][0].transcript;
-
+    $("input").value = event.results[0][0].transcript;
     sendMessage();
-
   };
 
   recognition.onerror = () => {
-
-    $("systemStatus").textContent =
-      "Voice recognition error.";
-
+    $("systemStatus").textContent = "Voice recognition error.";
   };
 
   recognition.start();
-
 }
 
-$("voiceButton").addEventListener(
-  "click",
-  startVoice
-);
-
-// =================================
-// TEACH MARCUS
-// =================================
-
-function teachMarcus() {
-
-  const value =
-    $("memoryInput").value.trim();
-
-  const split = value.indexOf(":");
-
-  if (split < 1) {
-
-    $("systemStatus").textContent =
-      "Use format: topic: information";
-
-    return;
-
-  }
-
-  const key =
-    value.substring(0, split)
-    .trim()
-    .toLowerCase();
-
-  const info =
-    value.substring(split + 1).trim();
-
-  if (!info) return;
-
-  memories[key] = info;
-
-  saveMemory();
-
-  $("memoryInput").value = "";
-
-  $("systemStatus").textContent =
-    "New lesson saved successfully.";
-
-  addMessage(
-    "I have learned: " + key,
-    "marcus"
-  );
-
-}
-
-$("learnButton").addEventListener(
-  "click",
-  teachMarcus
-);
-
-// =================================
-// VIEW MEMORY
-// =================================
-
-function showMemory() {
-
-  const keys = Object.keys(memories);
-
-  $("memoryList").textContent =
-    keys.length
-    ? keys.map(
-        key => key + ": " + memories[key]
-      ).join(" | ")
-    : "No saved lessons.";
-
-}
-
-$("viewMemoryButton").addEventListener(
-  "click",
-  showMemory
-);
+$("voiceButton").addEventListener("click", startVoice);
 
 // =================================
 // IDENTITY
 // =================================
 
-function identifyMarcus() {
-
+$("identityButton").addEventListener("click", () => {
   addMessage(
-    "I am Marcus AI V6. " +
-    "My creator is CJ. " +
-    "I am your personal AI assistant.",
+    "I am Marcus AI V7, developed by CJ. I use Cloudflare Workers AI and persistent KV memory.",
     "marcus"
   );
-
-}
-
-$("identityButton").addEventListener(
-  "click",
-  identifyMarcus
-);
+});
 
 // =================================
 // CLEAR CHAT
 // =================================
 
-function clearChat() {
-
-  if (!confirm("Clear conversation history?")) {
-    return;
-  }
+$("clearButton").addEventListener("click", () => {
+  if (!confirm("Clear conversation history?")) return;
 
   $("chat").innerHTML = "";
-
   history = [];
-
   saveHistory();
 
-  addMessage(
-    "Conversation cleared. What shall we work on?",
-    "marcus"
-  );
-
-}
-
-$("clearButton").addEventListener(
-  "click",
-  clearChat
-);
-
-// =================================
-// RESET MEMORY
-// =================================
-
-function forgetMemory() {
-
-  if (!confirm(
-    "Are you sure you want to delete all saved lessons?"
-  )) {
-    return;
-  }
-
-  memories = {};
-
-  saveMemory();
-
-  showMemory();
-
-  $("systemStatus").textContent =
-    "Saved lessons cleared.";
-
-}
-
-$("resetButton").addEventListener(
-  "click",
-  forgetMemory
-);
+  addMessage("Conversation cleared. What shall we work on?", "marcus");
+});
 
 // =================================
 // EXPORT MEMORY
 // =================================
 
-function exportMemory() {
+$("exportButton").addEventListener("click", async () => {
+  try {
+    const data = await workerRequest({
+      action: "get_memory"
+    });
 
-  const blob = new Blob(
-    [
-      JSON.stringify(memories, null, 2)
-    ],
-    {
-      type: "application/json"
-    }
-  );
+    const blob = new Blob(
+      [JSON.stringify(data.memory || {}, null, 2)],
+      { type: "application/json" }
+    );
 
-  const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
 
-  const a = document.createElement("a");
+    a.href = url;
+    a.download = "marcus-memory.json";
+    a.click();
 
-  a.href = url;
+    URL.revokeObjectURL(url);
 
-  a.download = "marcus-memory.json";
+    $("systemStatus").textContent = "Memory export created.";
 
-  a.click();
-
-  URL.revokeObjectURL(url);
-
-}
-
-$("exportButton").addEventListener(
-  "click",
-  exportMemory
-);
-
-// =================================
-// RESTORE CHAT HISTORY
-// =================================
-
-history.forEach(item => {
-
-  if (item.user && item.marcus) {
-
-    addMessage(item.user, "user");
-
-    addMessage(item.marcus, "marcus");
-
+  } catch (error) {
+    $("systemStatus").textContent =
+      "Export failed: " + error.message;
   }
-
 });
 
 // =================================
-// CHECK CLOUDFLARE CONNECTION
+// RESTORE CHAT
+// =================================
+
+history.forEach(item => {
+  if (item.user && item.marcus) {
+    addMessage(item.user, "user");
+    addMessage(item.marcus, "marcus");
+  }
+});
+
+// =================================
+// CHECK CONNECTION
 // =================================
 
 async function checkConnection() {
-
   try {
+    const response = await fetch(WORKER_URL);
 
-    const response = await fetch(WORKER_URL, {
-      method: "GET"
-    });
-
-    if (!response.ok) {
-      throw new Error("Worker unavailable.");
-    }
+    if (!response.ok) throw new Error("Worker unavailable.");
 
     const result = await response.text();
 
     $("connectionStatus").textContent =
-      result.includes("online")
-      ? "● WORKER ONLINE"
-      : "● WORKER RESPONDING";
+      result.toLowerCase().includes("online")
+        ? "● WORKER ONLINE"
+        : "● WORKER RESPONDING";
 
     $("systemStatus").textContent =
-      "Cloudflare Worker is reachable. Send a message to test AI.";
+      "Cloudflare Worker reachable. Loading memory...";
 
-  } catch(error) {
+    await loadMemory();
 
-    $("connectionStatus").textContent =
-      "● OFFLINE";
-
+  } catch (error) {
+    $("connectionStatus").textContent = "● OFFLINE";
     $("systemStatus").textContent =
-      "Could not reach Cloudflare Worker. Check the connection.";
-
+      "Could not reach Cloudflare Worker.";
   }
-
 }
 
 // =================================
@@ -905,6 +799,6 @@ async function checkConnection() {
 checkConnection();
 
 </script>
-
 </body>
- </html>
+  </html>
+  
