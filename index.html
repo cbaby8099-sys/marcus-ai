@@ -1,299 +1,403 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080b12">
-<title>Marcus AI V8</title>
+<meta name="description" content="Marcus AI V9 - Personal AI Assistant">
+<link rel="manifest" href="./manifest.json">
+<title>Marcus AI V9</title>
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: #080b12;
-  color: white;
-  font-family: Arial, sans-serif;
+:root {
+  --bg:#080b12;
+  --panel:#101827;
+  --panel2:#172337;
+  --border:#26364c;
+  --text:#edf4ff;
+  --muted:#91a4bd;
+  --blue:#55c8ff;
+  --purple:#8869ff;
+  --green:#55df9b;
+  --red:#ff657b;
 }
-
-header {
-  padding: 17px;
-  background: #101827;
-  border-bottom: 1px solid #26364c;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at 50% -15%,#17345b 0%,transparent 48%),
+    var(--bg);
+  color:var(--text);
+  font-family:Arial,system-ui,sans-serif;
 }
-
-header h2 {
-  margin: 0;
-  color: #55c8ff;
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{
+  max-width:900px;
+  min-height:100vh;
+  margin:auto;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
 }
-
-.status {
-  font-size: 11px;
-  color: #55df9b;
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:13px;
+  background:#101827ee;
+  border:1px solid var(--border);
+  border-radius:17px;
 }
-
-main {
-  max-width: 750px;
-  margin: auto;
-  padding: 15px;
+.brand{display:flex;align-items:center;gap:10px}
+.logo{
+  width:43px;height:43px;
+  display:grid;place-items:center;
+  border-radius:14px;
+  background:linear-gradient(135deg,#078bd2,#8b5cf6);
+  box-shadow:0 0 25px #398cff55;
+  font-size:22px;font-weight:bold;
 }
-
-.profile {
-  text-align: center;
-  padding: 20px 10px;
+.brand h1{font-size:16px;margin:0}
+.brand p{font-size:10px;color:var(--muted);margin:4px 0 0}
+.status{font-size:10px;color:var(--green)}
+.header-actions{display:flex;gap:7px}
+.btn{
+  padding:10px 12px;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--text);
+  border-radius:11px;
 }
-
-.avatar {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  margin: auto;
-  background: linear-gradient(135deg,#0878b9,#7c4dff);
-  display: grid;
-  place-items: center;
-  font-size: 31px;
-  font-weight: bold;
-  box-shadow: 0 0 25px #0878b955;
+.btn:disabled{opacity:.5}
+.hero{text-align:center;padding:23px 8px 16px}
+.orb{
+  width:83px;height:83px;
+  margin:0 auto 12px;
+  border-radius:50%;
+  display:grid;place-items:center;
+  font-size:32px;font-weight:bold;
+  background:radial-gradient(circle at 35% 30%,#c4e3ff,#3182d8 48%,#49318f);
+  box-shadow:0 0 35px #428cff66,inset 0 0 15px #ffffff55;
+  animation:float 4s ease-in-out infinite;
 }
-
-.profile p {
-  color: #9baec5;
-  font-size: 13px;
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
 }
-
-#chat {
-  height: 43vh;
-  min-height: 260px;
-  overflow-y: auto;
-  padding: 12px;
-  background: #0d1420;
-  border: 1px solid #26364c;
-  border-radius: 15px;
-  scroll-behavior: smooth;
+.hero h2{font-size:21px;margin:0}
+.hero p{font-size:12px;color:var(--muted);margin:7px 0}
+.quick{
+  display:flex;justify-content:center;flex-wrap:wrap;
+  gap:7px;margin:0 0 14px;
 }
-
-.message {
-  padding: 12px 14px;
-  margin: 10px 0;
-  border-radius: 13px;
-  max-width: 90%;
-  line-height: 1.55;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+.quick button{font-size:11px}
+#chat{
+  flex:1;
+  min-height:280px;
+  max-height:53vh;
+  overflow-y:auto;
+  scroll-behavior:smooth;
+  padding:13px;
+  border:1px solid var(--border);
+  border-radius:17px;
+  background:#0d1420eF;
 }
-
-.user {
-  background: #075b91;
-  margin-left: auto;
+.message{
+  display:flex;
+  margin:11px 0;
+  gap:8px;
+  align-items:flex-start;
 }
-
-.marcus {
-  background: #1a2637;
-  margin-right: auto;
+.message.user{flex-direction:row-reverse}
+.avatar{
+  flex:0 0 31px;
+  height:31px;
+  border-radius:11px;
+  background:var(--panel2);
+  display:grid;place-items:center;
+  font-size:14px;
 }
-
-.controls {
-  display: flex;
-  gap: 8px;
-  margin-top: 11px;
-  flex-wrap: wrap;
+.user .avatar{background:#075b91}
+.content{max-width:86%;min-width:0}
+.bubble{
+  padding:11px 13px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:#172337;
+  font-size:13px;
+  line-height:1.55;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
 }
-
-input {
-  flex: 1;
-  min-width: 0;
-  padding: 14px;
-  background: #121d2c;
-  border: 1px solid #34475f;
-  border-radius: 12px;
-  color: white;
-  font-size: 15px;
+.user .bubble{
+  background:#075b91;
+  border-color:#287bb1;
 }
-
-button {
-  border: 0;
-  border-radius: 11px;
-  background: #087fba;
-  color: white;
-  padding: 12px 14px;
-  font-weight: bold;
-  cursor: pointer;
+.bubble img{
+  display:block;
+  max-width:100%;
+  max-height:210px;
+  margin-top:8px;
+  border-radius:10px;
 }
-
-button:disabled {
-  opacity: .5;
+.time{font-size:10px;color:var(--muted);margin-top:5px}
+.typing{
+  color:var(--blue);
+  font-size:12px;
+  padding:9px;
+  animation:pulse 1s infinite alternate;
 }
-
-.secondary {
-  background: #26364c;
+@keyframes pulse{to{opacity:.4}}
+.composer{
+  margin-top:11px;
+  padding:11px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:17px;
 }
-
-.active {
-  background: #087f63;
+.preview{display:none;margin-bottom:9px;position:relative}
+.preview img{
+  max-width:110px;max-height:95px;
+  border-radius:10px;
 }
-
-.panel {
-  margin-top: 15px;
-  background: #101827;
-  padding: 15px;
-  border-radius: 13px;
-  border: 1px solid #26364c;
+.remove{
+  position:absolute;top:-7px;left:95px;
+  background:var(--red);border:0;
+  color:white;border-radius:50%;
+  width:23px;height:23px;
 }
-
-.panel h3 {
-  margin-top: 0;
-  color: #55c8ff;
+.inputrow{display:flex;gap:7px;align-items:flex-end}
+#input{
+  flex:1;min-width:0;
+  resize:none;min-height:44px;max-height:110px;
+  padding:12px;
+  background:#080e18;
+  color:white;
+  border:1px solid #34475f;
+  border-radius:12px;
+  outline:none;
+  font-size:14px;
 }
-
-#memoryList, #systemStatus {
-  font-size: 13px;
-  color: #b8c9dc;
-  overflow-wrap: anywhere;
-  line-height: 1.6;
+#input:focus{border-color:var(--blue)}
+.icon{
+  width:43px;height:43px;
+  padding:0;
+  font-size:17px;
 }
-
-.memory-entry {
-  padding: 9px;
-  margin: 7px 0;
-  background: #0d1420;
-  border-radius: 8px;
+.send{
+  background:linear-gradient(135deg,#087fba,#7657df);
+  border:0;font-weight:bold;
 }
-
-.small-note {
-  color: #8ba0b9;
-  font-size: 12px;
-  line-height: 1.5;
+.tools{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:10px;
 }
-
-footer {
-  text-align: center;
-  padding: 20px;
-  color: #60758d;
-  font-size: 12px;
+.toolgroup{display:flex;gap:6px;flex-wrap:wrap}
+.tool{
+  font-size:10px;
+  padding:8px;
+  border-radius:9px;
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted);
 }
-
-@media(max-width:450px) {
-  main { padding: 10px; }
-  button { padding: 11px; font-size: 12px; }
+.tool.active{color:var(--green);border-color:var(--green)}
+select{
+  max-width:145px;
+  padding:7px;
+  border-radius:9px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  color:white;
+  font-size:10px;
+}
+.panel{
+  display:none;
+  margin-top:12px;
+  padding:14px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:15px;
+}
+.panel h3{color:var(--blue);font-size:15px;margin:0 0 10px}
+.panel p{font-size:11px;color:var(--muted)}
+.panel input{
+  width:100%;
+  padding:12px;
+  margin:5px 0;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#080e18;
+  color:white;
+}
+.panel-buttons{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}
+.memory-entry{
+  padding:9px;margin:7px 0;
+  background:#0d1420;border-radius:9px;
+  font-size:12px;overflow-wrap:anywhere;
+}
+#systemStatus,#memoryList{
+  color:#b8c9dc;
+  font-size:12px;
+  line-height:1.6;
+  overflow-wrap:anywhere;
+}
+footer{
+  text-align:center;
+  color:#60758d;
+  font-size:10px;
+  padding:15px;
+}
+@media(max-width:450px){
+  .app{padding:8px}
+  header{padding:10px}
+  .btn{padding:9px}
+  #chat{max-height:51vh;padding:9px}
+  .bubble{font-size:12px}
 }
 </style>
 </head>
 
 <body>
+<div class="app">
 
 <header>
-  <h2>MARCUS AI</h2>
-  <span class="status" id="connectionStatus">● CHECKING</span>
+  <div class="brand">
+    <div class="logo">M</div>
+    <div>
+      <h1>MARCUS <span style="color:#55c8ff">V9</span></h1>
+      <p>Personal AI intelligence</p>
+    </div>
+  </div>
+  <div class="header-actions">
+    <span class="status" id="connectionStatus">● CHECKING</span>
+    <button class="btn" id="memoryToggle">🧠</button>
+  </div>
 </header>
 
-<main>
+<section class="hero">
+  <div class="orb">M</div>
+  <h2>Marcus is ready.</h2>
+  <p>Your personal AI assistant · V9</p>
+</section>
 
-<div class="profile">
-  <div class="avatar">M</div>
-  <h2>Marcus V8</h2>
-  <p>Personal AI Assistant · Created by CJ</p>
+<div class="quick">
+  <button class="btn" data-prompt="Introduce yourself and explain what you can help me with.">✨ Introduce yourself</button>
+  <button class="btn" data-prompt="Help me organise my day.">📅 Plan my day</button>
+  <button class="btn" data-prompt="Teach me something interesting.">🧠 Teach me</button>
 </div>
 
-<div id="chat">
+<main id="chat">
   <div class="message marcus">
-    Hello, Master. I'm Marcus V8.
-
-    My upgraded conversation and memory systems are ready.
-
-    What are we working on today?
+    <div class="avatar">M</div>
+    <div class="content">
+      <div class="bubble">Hello, Master. Marcus V9 is ready. You can talk, type, or send me a picture to analyse. What shall we work on?</div>
+      <div class="time">Marcus · Ready</div>
+    </div>
   </div>
-</div>
-
-<div class="controls">
-  <input id="input" placeholder="Talk to Marcus..." autocomplete="off">
-  <button id="sendButton">SEND</button>
-</div>
-
-<div class="controls">
-  <button class="secondary" id="voiceButton">🎙 Start Wake Word</button>
-  <button class="secondary" id="speechButton">🔊 Speech ON</button>
-  <button class="secondary" id="clearButton">Clear</button>
-</div>
-
-<p class="small-note">
-  Voice command: Say "Hey Marcus" followed by your command.
-  Keep this webpage open while listening.
-</p>
-
-<div class="panel">
-  <h3>Marcus Memory</h3>
-
-  <input id="memoryInput" placeholder="topic: information">
-
-  <div class="controls">
-    <button id="learnButton">LEARN</button>
-    <button class="secondary" id="viewMemoryButton">VIEW MEMORY</button>
-  </div>
-
-  <div id="memoryList">Loading saved memories...</div>
-</div>
-
-<div class="panel">
-  <h3>Marcus System</h3>
-
-  <p id="systemStatus">Initializing Marcus V8...</p>
-
-  <div class="controls">
-    <button class="secondary" id="identityButton">IDENTITY</button>
-    <button class="secondary" id="exportButton">EXPORT MEMORY</button>
-    <button class="secondary" id="resetButton">RESET MEMORY</button>
-  </div>
-</div>
-
 </main>
 
-<footer>MARCUS AI V8 · Created by CJ</footer>
+<section class="composer">
+  <div class="preview" id="preview">
+    <img id="previewImage" alt="Selected photo">
+    <button class="remove" id="removeImage">×</button>
+  </div>
+
+  <div class="inputrow">
+    <button class="btn icon" id="photoButton">＋</button>
+    <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+    <textarea id="input" placeholder="Message Marcus..." rows="1"></textarea>
+    <button class="btn icon" id="micButton">🎙</button>
+    <button class="btn icon send" id="sendButton">➤</button>
+  </div>
+
+  <div class="tools">
+    <div class="toolgroup">
+      <button class="tool active" id="speechButton">🔊 SPEECH ON</button>
+      <button class="tool" id="wakeButton">🎙 WAKE WORD</button>
+      <button class="tool" id="stopButton">⏹ STOP</button>
+      <button class="tool" id="clearButton">CLEAR</button>
+    </div>
+    <select id="voiceSelect" aria-label="Choose Marcus voice">
+      <option value="">Default voice</option>
+    </select>
+  </div>
+</section>
+
+<section class="panel" id="memoryPanel">
+  <h3>🧠 Marcus Memory</h3>
+  <p>Teach Marcus information to save for future conversations.</p>
+  <input id="memoryInput" placeholder="topic: information">
+  <div class="panel-buttons">
+    <button class="btn" id="learnButton">LEARN</button>
+    <button class="btn" id="viewMemoryButton">VIEW MEMORY</button>
+    <button class="btn" id="resetMemoryButton">RESET MEMORY</button>
+  </div>
+  <div id="memoryList">Loading memory...</div>
+</section>
+
+<section class="panel" style="display:block">
+  <h3>⚙️ Marcus System</h3>
+  <div id="systemStatus">Starting Marcus V9...</div>
+  <div class="panel-buttons">
+    <button class="btn" id="identityButton">IDENTITY</button>
+    <button class="btn" id="exportButton">EXPORT MEMORY</button>
+  </div>
+</section>
+
+<footer>MARCUS AI V9 · PERSONAL AI WORKSPACE</footer>
+</div>
 
 <script>
+"use strict";
 
-// =================================
-// CONFIGURATION
-// =================================
+/* =================================
+   CONFIGURATION
+================================= */
 
 const WORKER_URL =
 "https://marcus-ai.cbaby8099.workers.dev";
 
 const $ = id => document.getElementById(id);
 
-let speechEnabled = true;
-let busy = false;
-let memories = {};
-let history = [];
+const USER_KEY = "marcus_user_id";
+const HISTORY_KEY = "marcus_v7_history";
 
-const MAX_HISTORY = 10;
+let userId = localStorage.getItem(USER_KEY);
 
-// =================================
-// USER ID
-// =================================
+if (!userId) {
+  userId = window.crypto?.randomUUID
+    ? crypto.randomUUID()
+    : "marcus-" + Date.now() + "-" + Math.random();
 
-function getMarcusUserId() {
-  let id = localStorage.getItem("marcus_user_id");
-
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem("marcus_user_id", id);
-  }
-
-  return id;
+  localStorage.setItem(USER_KEY,userId);
 }
 
-const marcusUserId = getMarcusUserId();
+let history = [];
+let memories = {};
+let selectedImage = null;
+let busy = false;
+let speechEnabled = true;
+let recognition = null;
+let wakeListening = false;
 
-// =================================
-// RESTORE HISTORY
-// =================================
+const MAX_HISTORY = 6;
+
+/* =================================
+   HISTORY PRESERVATION
+================================= */
 
 try {
   history = JSON.parse(
-    sessionStorage.getItem("marcus_v7_history") || "[]"
+    sessionStorage.getItem(HISTORY_KEY) || "[]"
   );
 
   if (!Array.isArray(history)) history = [];
@@ -301,29 +405,30 @@ try {
   history = [];
 }
 
+history = history.slice(-10);
+
 function saveHistory() {
   sessionStorage.setItem(
-    "marcus_v7_history",
+    HISTORY_KEY,
     JSON.stringify(history)
   );
 }
 
-// Convert frontend history into Worker-compatible messages.
 function getWorkerHistory() {
   const result = [];
 
   history.slice(-MAX_HISTORY).forEach(item => {
     if (item.user) {
       result.push({
-        role: "user",
-        content: item.user
+        role:"user",
+        content:item.user
       });
     }
 
     if (item.marcus) {
       result.push({
-        role: "assistant",
-        content: item.marcus
+        role:"assistant",
+        content:item.marcus
       });
     }
   });
@@ -331,504 +436,262 @@ function getWorkerHistory() {
   return result;
 }
 
-// =================================
-// WORKER REQUEST
-// =================================
+/* =================================
+   CHAT DISPLAY
+================================= */
+
+const chat = $("chat");
+
+function addMessage(text,type,imageData=null) {
+  const row = document.createElement("div");
+  row.className = "message " + type;
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  avatar.textContent = type === "user" ? "👤" : "M";
+
+  const content = document.createElement("div");
+  content.className = "content";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text;
+
+  if (imageData) {
+    const img = document.createElement("img");
+    img.src = imageData;
+    img.alt = "Uploaded image";
+    bubble.appendChild(img);
+  }
+
+  const time = document.createElement("div");
+  time.className = "time";
+  time.textContent = type === "user" ? "You" : "Marcus";
+
+  content.append(bubble,time);
+  row.append(avatar,content);
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+
+  return row;
+}
+
+function showThinking() {
+  const el = document.createElement("div");
+  el.className = "typing";
+  el.id = "thinking";
+  el.textContent = "Marcus is thinking...";
+  chat.appendChild(el);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function hideThinking() {
+  $("thinking")?.remove();
+}
+
+/* =================================
+   WORKER CONNECTION
+================================= */
 
 async function workerRequest(payload) {
-  const response = await fetch(WORKER_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
+  const response = await fetch(WORKER_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
       ...payload,
-      userId: marcusUserId
+      userId
     })
   });
 
   const data = await response.json();
 
-  if (!response.ok || data.error) {
-    throw new Error(
-      data.error || "Marcus request failed."
-    );
+  if (!response.ok || data.success === false || data.error) {
+    throw new Error(data.error || "Worker request failed.");
   }
 
   return data;
 }
 
-// =================================
-// CHAT DISPLAY
-// =================================
-
-function addMessage(text, type) {
-  const div = document.createElement("div");
-
-  div.className = "message " + type;
-  div.textContent = text;
-
-  $("chat").appendChild(div);
-  $("chat").scrollTop = $("chat").scrollHeight;
-
-  return div;
-}
-
-// =================================
-// MEMORY DISPLAY
-// =================================
-
-function showMemory() {
-  const container = $("memoryList");
-  container.innerHTML = "";
-
-  const entries = Object.entries(memories);
-
-  if (!entries.length) {
-    container.textContent = "No saved memories yet.";
-    return;
-  }
-
-  entries.forEach(([key, value]) => {
-    const item = document.createElement("div");
-    item.className = "memory-entry";
-
-    const title = document.createElement("strong");
-    title.textContent = key + ": ";
-
-    const content = document.createElement("span");
-    content.textContent = value;
-
-    item.appendChild(title);
-    item.appendChild(content);
-
-    container.appendChild(item);
-  });
-}
-
-// =================================
-// LOAD MEMORY
-// =================================
-
-async function loadMemory() {
-  const data = await workerRequest({
-    action: "get_memory"
-  });
-
-  memories = data.memory || {};
-  showMemory();
-
-  $("systemStatus").textContent =
-    "Persistent memory loaded successfully.";
-}
-
-// =================================
-// SAVE MEMORY
-// =================================
-
-async function saveMemory() {
-  const data = await workerRequest({
-    action: "save_memory",
-    memory: memories
-  });
-
-  memories = data.memory || memories;
-
-  showMemory();
-
-  return data;
-}
-
-// =================================
-// TEACH MARCUS
-// =================================
-
-async function teachMarcus() {
-  const value = $("memoryInput").value.trim();
-  const split = value.indexOf(":");
-
-  if (split < 1) {
-    $("systemStatus").textContent =
-      "Use format: topic: information";
-    return;
-  }
-
-  const topic = value.substring(0, split).trim();
-  const info = value.substring(split + 1).trim();
-
-  if (!topic || !info) return;
-
-  const button = $("learnButton");
-  button.disabled = true;
-
-  const previous = memories[topic];
-
+async function checkConnection() {
   try {
-    memories[topic] = info;
+    const response = await fetch(WORKER_URL);
+    if (!response.ok) throw new Error("Worker unavailable");
 
-    await saveMemory();
-
-    $("memoryInput").value = "";
-
-    $("systemStatus").textContent =
-      "New information saved successfully.";
-
-    addMessage(
-      "I've learned this information: " + topic + ": " + info,
-      "marcus"
-    );
-
-  } catch (error) {
-    if (previous === undefined) {
-      delete memories[topic];
-    } else {
-      memories[topic] = previous;
-    }
-
-    showMemory();
-
-    $("systemStatus").textContent =
-      "Could not save memory: " + error.message;
-
-  } finally {
-    button.disabled = false;
-  }
-}
-
-$("learnButton").addEventListener("click", teachMarcus);
-
-// =================================
-// VIEW MEMORY
-// =================================
-
-$("viewMemoryButton").addEventListener("click", async () => {
-  try {
-    $("systemStatus").textContent = "Loading memories...";
+    $("connectionStatus").textContent = "● ONLINE";
+    $("systemStatus").textContent = "Cloudflare connection established.";
 
     await loadMemory();
-
-    addMessage(
-      "Here are the memories currently saved for this browser.",
-      "marcus"
-    );
-
-  } catch (error) {
-    $("systemStatus").textContent = error.message;
-  }
-});
-
-// =================================
-// RESET MEMORY
-// =================================
-
-$("resetButton").addEventListener("click", async () => {
-  if (!confirm("Delete all saved Marcus memories?")) return;
-
-  const button = $("resetButton");
-  button.disabled = true;
-
-  try {
-    await workerRequest({
-      action: "delete_memory"
-    });
-
-    memories = {};
-    showMemory();
-
+  } catch(error) {
+    $("connectionStatus").textContent = "● OFFLINE";
     $("systemStatus").textContent =
-      "All saved memories have been deleted.";
-
-  } catch (error) {
-    $("systemStatus").textContent = error.message;
-
-  } finally {
-    button.disabled = false;
+      "Connection problem: " + error.message;
   }
-});
-
-// =================================
-// VOICE SYSTEM
-// =================================
-
-let recognition = null;
-let wakeListening = false;
-let wakeArmed = false;
-let voiceRestartTimer = null;
-
-function voiceStatus(message) {
-  $("systemStatus").textContent = message;
 }
 
-function startWakeListening() {
-  const Recognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
+/* =================================
+   PHOTO COMPRESSION
+================================= */
 
-  if (!Recognition) {
-    voiceStatus(
-      "Speech recognition is not supported by this browser."
+function compressImage(file) {
+  return new Promise((resolve,reject) => {
+    const reader = new FileReader();
+
+    reader.onerror = () => reject(
+      new Error("Could not read this photo.")
     );
+
+    reader.onload = () => {
+      const img = new Image();
+
+      img.onerror = () => reject(
+        new Error("Invalid image.")
+      );
+
+      img.onload = () => {
+        const maxDimension = 1100;
+        const scale = Math.min(
+          1,
+          maxDimension / Math.max(img.width,img.height)
+        );
+
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+        resolve(canvas.toDataURL("image/jpeg",0.78));
+      };
+
+      img.src = reader.result;
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+$("photoButton").addEventListener("click",() => {
+  $("photoInput").click();
+});
+
+$("photoInput").addEventListener("change",async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const allowed = [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ];
+
+  if (!allowed.includes(file.type)) {
+    alert("Choose a JPG, PNG or WebP image.");
     return;
   }
 
-  if (wakeListening) return;
+  if (file.size > 5 * 1024 * 1024) {
+    alert("Choose an image smaller than 5 MB.");
+    return;
+  }
+
+  $("systemStatus").textContent = "Preparing photo...";
 
   try {
-    recognition = new Recognition();
-
-    recognition.lang = "en-ZA";
-    recognition.continuous = true;
-    recognition.interimResults = false;
-
-    wakeListening = true;
-    wakeArmed = false;
-
-    $("voiceButton").textContent = "⏹ Stop Listening";
-    $("voiceButton").classList.add("active");
-
-    voiceStatus(
-      'Listening. Say "Hey Marcus" to activate me.'
-    );
-
-    recognition.onresult = event => {
-      for (
-        let i = event.resultIndex;
-        i < event.results.length;
-        i++
-      ) {
-        if (!event.results[i].isFinal) continue;
-
-        const transcript =
-          event.results[i][0].transcript.trim();
-
-        if (!transcript) continue;
-
-        const lower = transcript.toLowerCase();
-
-        if (
-          lower.includes("hey marcus") ||
-          lower.includes("hi marcus")
-        ) {
-          const command = transcript.replace(
-            /hey marcus|hi marcus/i,
-            ""
-          ).trim();
-
-          wakeArmed = true;
-
-          voiceStatus(
-            "Marcus activated. Listening for your command."
-          );
-
-          if (command) {
-            wakeArmed = false;
-            sendMessage(command);
-          }
-
-          continue;
-        }
-
-        if (wakeArmed) {
-          wakeArmed = false;
-          sendMessage(transcript);
-        }
-      }
-    };
-
-    recognition.onerror = event => {
-      if (event.error === "not-allowed") {
-        stopWakeListening();
-
-        voiceStatus(
-          "Microphone permission denied. Allow microphone access in your browser."
-        );
-
-        return;
-      }
-
-      if (event.error !== "aborted") {
-        voiceStatus(
-          "Voice recognition issue: " + event.error
-        );
-      }
-    };
-
-    recognition.onend = () => {
-      if (wakeListening) {
-        clearTimeout(voiceRestartTimer);
-
-        voiceRestartTimer = setTimeout(() => {
-          if (wakeListening) {
-            try {
-              recognition.start();
-            } catch (error) {
-              // Browser may already be restarting recognition.
-            }
-          }
-        }, 700);
-      }
-    };
-
-    recognition.start();
-
-  } catch (error) {
-    stopWakeListening();
-    voiceStatus("Could not start voice recognition.");
-  }
-}
-
-function stopWakeListening() {
-  wakeListening = false;
-  wakeArmed = false;
-
-  clearTimeout(voiceRestartTimer);
-
-  if (recognition) {
-    try {
-      recognition.stop();
-    } catch (error) {}
-  }
-
-  $("voiceButton").textContent = "🎙 Start Wake Word";
-  $("voiceButton").classList.remove("active");
-
-  voiceStatus("Voice listening stopped.");
-}
-
-$("voiceButton").addEventListener("click", () => {
-  if (wakeListening) {
-    stopWakeListening();
-  } else {
-    startWakeListening();
+    selectedImage = await compressImage(file);
+    $("previewImage").src = selectedImage;
+    $("preview").style.display = "block";
+    $("systemStatus").textContent = "Photo ready for Marcus.";
+  } catch(error) {
+    alert(error.message);
   }
 });
 
-// =================================
-// SPEECH OUTPUT
-// =================================
-
-function speak(text) {
-  if (!("speechSynthesis" in window)) return;
-
-  speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-
-  utterance.rate = 1;
-  utterance.pitch = 1;
-  utterance.volume = 1;
-
-  const voices = speechSynthesis.getVoices();
-
-  const preferred = voices.find(voice =>
-    /en-ZA|en-GB|en-US/i.test(voice.lang)
-  );
-
-  if (preferred) {
-    utterance.voice = preferred;
-  }
-
-  // Prevent the microphone from hearing Marcus speaking.
-  utterance.onstart = () => {
-    if (recognition && wakeListening) {
-      try {
-        recognition.stop();
-      } catch (error) {}
-    }
-  };
-
-  speechSynthesis.speak(utterance);
-}
-
-$("speechButton").addEventListener("click", () => {
-  speechEnabled = !speechEnabled;
-
-  $("speechButton").textContent =
-    speechEnabled ? "🔊 Speech ON" : "🔇 Speech OFF";
-
-  if (!speechEnabled && "speechSynthesis" in window) {
-    speechSynthesis.cancel();
-  }
+$("removeImage").addEventListener("click",() => {
+  selectedImage = null;
+  $("preview").style.display = "none";
+  $("photoInput").value = "";
 });
 
-// =================================
-// SEND MESSAGE
-// =================================
+/* =================================
+   SEND MESSAGE
+================================= */
 
 async function sendMessage(customMessage) {
   if (busy) return;
 
-  const input = $("input");
-  const button = $("sendButton");
-
-  const message =
+  const message = (
     typeof customMessage === "string"
-      ? customMessage.trim()
-      : input.value.trim();
+      ? customMessage
+      : $("input").value
+  ).trim();
 
-  if (!message) return;
+  if (!message && !selectedImage) return;
 
-  if (message.length > 3000) {
-    addMessage(
-      "Please keep your message under 3000 characters.",
-      "marcus"
-    );
-    return;
-  }
+  const imageData = selectedImage;
+
+  const outgoingMessage = message ||
+    "Please analyse this photo and describe what you can see.";
 
   busy = true;
-  button.disabled = true;
-  button.textContent = "...";
+  $("sendButton").disabled = true;
 
-  addMessage(message, "user");
-
-  if (!customMessage) input.value = "";
-
-  const thinking = addMessage(
-    "Marcus is thinking...",
-    "marcus"
+  addMessage(
+    outgoingMessage,
+    "user",
+    imageData
   );
 
+  $("input").value = "";
+  $("input").style.height = "auto";
+
+  selectedImage = null;
+  $("preview").style.display = "none";
+  $("photoInput").value = "";
+
+  showThinking();
+
   try {
-    const data = await workerRequest({
-      message,
-      history: getWorkerHistory()
-    });
+    const payload = {
+      message:outgoingMessage,
+      history:getWorkerHistory()
+    };
 
-    const answer = data.reply;
-
-    if (
-      typeof answer !== "string" ||
-      !answer.trim()
-    ) {
-      throw new Error("Marcus returned an empty response.");
+    if (imageData) {
+      payload.imageData = imageData;
     }
 
-    thinking.remove();
+    const data = await workerRequest(payload);
 
-    addMessage(answer, "marcus");
+    if (!data.reply || typeof data.reply !== "string") {
+      throw new Error("Marcus returned no reply.");
+    }
+
+    hideThinking();
+
+    addMessage(data.reply,"marcus");
 
     history.push({
-      user: message,
-      marcus: answer
+      user:outgoingMessage,
+      marcus:data.reply
     });
 
-    history = history.slice(-MAX_HISTORY);
-
+    history = history.slice(-10);
     saveHistory();
 
+    $("systemStatus").textContent =
+      data.visionUsed
+        ? "Photo analysis completed."
+        : "Marcus is operating normally.";
+
+    $("connectionStatus").textContent = "● ONLINE";
+
     if (speechEnabled) {
-      speak(answer);
+      speak(data.reply);
     }
 
-    $("systemStatus").textContent =
-      "Marcus V8 is responding successfully.";
-
-    $("connectionStatus").textContent =
-      "● CONNECTED";
-
-  } catch (error) {
-    thinking.remove();
+  } catch(error) {
+    hideThinking();
 
     addMessage(
       "Connection error: " + error.message,
@@ -836,148 +699,170 @@ async function sendMessage(customMessage) {
     );
 
     $("systemStatus").textContent =
-      "Connection needs attention.";
+      "Request failed. Check the Worker connection.";
 
-    $("connectionStatus").textContent =
-      "● ERROR";
+    $("connectionStatus").textContent = "● ERROR";
 
   } finally {
     busy = false;
-    button.disabled = false;
-    button.textContent = "SEND";
+    $("sendButton").disabled = false;
+    $("input").focus();
   }
 }
 
-// =================================
-// SEND EVENTS
-// =================================
+/* =================================
+   INPUT CONTROLS
+================================= */
 
-$("sendButton").addEventListener(
-  "click",
-  () => sendMessage()
-);
+$("sendButton").addEventListener("click",() => {
+  sendMessage();
+});
 
-$("input").addEventListener("keydown", event => {
-  if (event.key === "Enter") {
+$("input").addEventListener("keydown",event => {
+  if (
+    event.key === "Enter" &&
+    !event.shiftKey
+  ) {
+    event.preventDefault();
     sendMessage();
   }
 });
 
-// =================================
-// IDENTITY
-// =================================
-
-$("identityButton").addEventListener("click", () => {
-  addMessage(
-    "I am Marcus V8, an AI assistant created by CJ. I use Cloudflare Workers AI, conversation context and persistent KV memory.",
-    "marcus"
-  );
+$("input").addEventListener("input",() => {
+  $("input").style.height = "auto";
+  $("input").style.height =
+    Math.min($("input").scrollHeight,110) + "px";
 });
 
-// =================================
-// CLEAR CHAT
-// =================================
-
-$("clearButton").addEventListener("click", () => {
-  if (!confirm("Clear conversation history?")) return;
-
-  $("chat").innerHTML = "";
-
-  history = [];
-  saveHistory();
-
-  addMessage(
-    "Conversation cleared. What shall we work on?",
-    "marcus"
-  );
+document.querySelectorAll("[data-prompt]").forEach(button => {
+  button.addEventListener("click",() => {
+    $("input").value = button.dataset.prompt;
+    sendMessage();
+  });
 });
 
-// =================================
-// EXPORT MEMORY
-// =================================
+/* =================================
+   MEMORY
+================================= */
 
-$("exportButton").addEventListener("click", async () => {
-  try {
-    const data = await workerRequest({
-      action: "get_memory"
-    });
+async function loadMemory() {
+  const data = await workerRequest({
+    action:"get_memory"
+  });
 
-    const blob = new Blob(
-      [JSON.stringify(data.memory || {}, null, 2)],
-      { type: "application/json" }
-    );
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = "marcus-memory.json";
-    a.click();
-
-    URL.revokeObjectURL(url);
-
-    $("systemStatus").textContent =
-      "Memory export created.";
-
-  } catch (error) {
-    $("systemStatus").textContent =
-      "Export failed: " + error.message;
-  }
-});
-
-// =================================
-// RESTORE CHAT
-// =================================
-
-history.forEach(item => {
-  if (item.user && item.marcus) {
-    addMessage(item.user, "user");
-    addMessage(item.marcus, "marcus");
-  }
-});
-
-// =================================
-// CONNECTION CHECK
-// =================================
-
-async function checkConnection() {
-  try {
-    const response = await fetch(WORKER_URL);
-
-    if (!response.ok) {
-      throw new Error("Worker unavailable.");
-    }
-
-    const result = await response.text();
-
-    $("connectionStatus").textContent =
-      result.toLowerCase().includes("online")
-        ? "● WORKER ONLINE"
-        : "● WORKER RESPONDING";
-
-    $("systemStatus").textContent =
-      "Cloudflare Worker reachable. Loading memory...";
-
-    await loadMemory();
-
-  } catch (error) {
-    $("connectionStatus").textContent =
-      "● OFFLINE";
-
-    $("systemStatus").textContent =
-      "Could not reach Cloudflare Worker: " +
-      error.message;
-  }
+  memories = data.memory || {};
+  showMemory();
 }
 
-// =================================
-// START MARCUS
-// =================================
+function showMemory() {
+  const list = $("memoryList");
+  list.innerHTML = "";
 
-checkConnection();
+  const entries = Object.entries(memories);
 
-</script>
+  if (!entries.length) {
+    list.textContent = "No saved memories yet.";
+    return;
+  }
 
-</body>
-  </html>
-  
+  entries.forEach(([key,value]) => {
+    const item = document.createElement("div");
+    item.className = "memory-entry";
+
+    const title = document.createElement("strong");
+    title.textContent = key + ": ";
+
+    const text = document.createElement("span");
+    text.textContent = value;
+
+    item.append(title,text);
+    list.appendChild(item);
+  });
+}
+
+async function saveMemory() {
+  const data = await workerRequest({
+    action:"save_memory",
+    memory:memories
+  });
+
+  memories = data.memory || memories;
+  showMemory();
+}
+
+$("memoryToggle").addEventListener("click",() => {
+  const panel = $("memoryPanel");
+  panel.style.display =
+    panel.style.display === "block" ? "none" : "block";
+});
+
+$("learnButton").addEventListener("click",async() => {
+  const value = $("memoryInput").value.trim();
+  const split = value.indexOf(":");
+
+  if (split < 1) {
+    $("systemStatus").textContent =
+      "Use topic: information format.";
+    return;
+  }
+
+  const topic = value.substring(0,split).trim();
+  const info = value.substring(split+1).trim();
+
+  if (!topic || !info) return;
+
+  const previous = memories[topic];
+
+  try {
+    memories[topic] = info;
+    await saveMemory();
+
+    $("memoryInput").value = "";
+    $("systemStatus").textContent = "Memory saved successfully.";
+
+  } catch(error) {
+    if (previous === undefined) {
+      delete memories[topic];
+    } else {
+      memories[topic] = previous;
+    }
+
+    showMemory();
+    $("systemStatus").textContent = error.message;
+  }
+});
+
+$("viewMemoryButton").addEventListener("click",async() => {
+  try {
+    await loadMemory();
+    $("systemStatus").textContent = "Memory loaded.";
+  } catch(error) {
+    $("systemStatus").textContent = error.message;
+  }
+});
+
+$("resetMemoryButton").addEventListener("click",async() => {
+  if (!confirm("Delete all saved Marcus memories?")) return;
+
+  try {
+    await workerRequest({action:"delete_memory"});
+    memories = {};
+    showMemory();
+    $("systemStatus").textContent = "Memory reset successfully.";
+  } catch(error) {
+    $("systemStatus").textContent = error.message;
+  }
+});
+
+/* =================================
+   SPEECH OUTPUT
+================================= */
+
+function loadVoices() {
+  if (!("speechSynthesis" in window)) return;
+
+  const voices = speechSynthesis.getVoices();
+  const select = $("voiceSelect");
+  const previous = select.value;
+
+  select.innerHTML = '<option value="">
