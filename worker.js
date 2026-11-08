@@ -1,4 +1,3 @@
-
 export default {
   async fetch(request, env) {
     const cors = {
@@ -24,7 +23,7 @@ export default {
     }
 
     if (request.method === "GET") {
-      return new Response("Marcus V7 is online.", {
+      return new Response("Marcus V8 is online.", {
         headers: cors
       });
     }
@@ -39,46 +38,137 @@ export default {
       }
 
       if (!env.MARCUS_MEMORY) {
-        return json({ error: "MARCUS_MEMORY binding is missing." }, 500);
+        return json({
+          error: "MARCUS_MEMORY binding is missing."
+        }, 500);
       }
 
       const body = await request.json();
-      const message = body.message;
       const userId = body.userId;
-
-      if (typeof message !== "string" || !message.trim()) {
-        return json({ error: "Please enter a message." }, 400);
-      }
-
-      if (message.length > 10000) {
-        return json({ error: "Message is too long." }, 413);
-      }
 
       if (
         typeof userId !== "string" ||
         !/^[a-zA-Z0-9_-]{16,80}$/.test(userId)
       ) {
-        return json({ error: "Invalid user ID. Refresh the website." }, 400);
+        return json({
+          error: "Invalid user ID. Refresh Marcus."
+        }, 400);
       }
 
       const memoryKey = `user:${userId}`;
 
-      let memories = [];
+      async function readMemory() {
+        const saved = await env.MARCUS_MEMORY.get(memoryKey);
 
-      const saved = await env.MARCUS_MEMORY.get(memoryKey);
+        if (!saved) return {};
 
-      if (saved) {
         try {
-          memories = JSON.parse(saved);
-          if (!Array.isArray(memories)) memories = [];
+          const parsed = JSON.parse(saved);
+
+          // Support the older V7 array format.
+          if (Array.isArray(parsed)) {
+            const converted = {};
+
+            parsed.forEach((item, index) => {
+              if (typeof item === "string") {
+                converted[`memory_${index + 1}`] = item;
+              }
+            });
+
+            return converted;
+          }
+
+          return parsed && typeof parsed === "object"
+            ? parsed
+            : {};
         } catch {
-          memories = [];
+          return {};
         }
+      }
+
+      async function writeMemory(memory) {
+        await env.MARCUS_MEMORY.put(
+          memoryKey,
+          JSON.stringify(memory)
+        );
+      }
+
+      let memory = await readMemory();
+
+      // MEMORY API
+      if (body.action === "get_memory") {
+        return json({
+          success: true,
+          memory
+        });
+      }
+
+      if (body.action === "save_memory") {
+        if (
+          !body.memory ||
+          typeof body.memory !== "object" ||
+          Array.isArray(body.memory)
+        ) {
+          return json({
+            error: "Invalid memory format."
+          }, 400);
+        }
+
+        const cleaned = {};
+
+        for (
+          const [key, value] of
+          Object.entries(body.memory).slice(-50)
+        ) {
+          if (
+            typeof key === "string" &&
+            typeof value === "string" &&
+            key.length <= 100 &&
+            value.length <= 500
+          ) {
+            cleaned[key] = value;
+          }
+        }
+
+        memory = cleaned;
+        await writeMemory(memory);
+
+        return json({
+          success: true,
+          memory
+        });
+      }
+
+      if (body.action === "delete_memory") {
+        await env.MARCUS_MEMORY.delete(memoryKey);
+
+        return json({
+          success: true,
+          memory: {}
+        });
+      }
+
+      // CHAT
+      const message = body.message;
+
+      if (
+        typeof message !== "string" ||
+        !message.trim()
+      ) {
+        return json({
+          error: "Please enter a message."
+        }, 400);
+      }
+
+      if (message.length > 10000) {
+        return json({
+          error: "Message is too long."
+        }, 413);
       }
 
       const cleanMessage = message.trim();
 
-      // SAVE MEMORY
+      // EXPLICIT MEMORY COMMAND
       const rememberMatch = cleanMessage.match(
         /^remember(?: that)?\s+(.+)$/i
       );
@@ -89,42 +179,45 @@ export default {
         if (fact.length > 500) {
           return json({
             success: false,
-            reply: "That memory is too long. Please shorten it."
+            reply: "Please shorten that memory."
           });
         }
 
-        const exists = memories.some(
-          item => item.toLowerCase() === fact.toLowerCase()
+        const existing = Object.values(memory).some(
+          value =>
+            value.toLowerCase() === fact.toLowerCase()
         );
 
-        if (!exists) {
-          memories.push(fact);
+        if (!existing) {
+          const nextNumber =
+            Object.keys(memory).length + 1;
+
+          memory[`memory_${nextNumber}`] = fact;
+
+          memory = Object.fromEntries(
+            Object.entries(memory).slice(-50)
+          );
+
+          await writeMemory(memory);
         }
-
-        memories = memories.slice(-50);
-
-        await env.MARCUS_MEMORY.put(
-          memoryKey,
-          JSON.stringify(memories)
-        );
 
         return json({
           success: true,
-          reply: `I've saved this to your memory: "${fact}". I'll use it in future conversations.`
+          reply: "I've saved that information to my memory."
         });
       }
 
-      // FORGET ALL MEMORIES
+      // FORGET EVERYTHING
       if (/^forget everything$/i.test(cleanMessage)) {
         await env.MARCUS_MEMORY.delete(memoryKey);
 
         return json({
           success: true,
-          reply: "I've cleared the memories saved for this browser ID."
+          reply: "Your saved Marcus memories have been cleared."
         });
       }
 
-      // FORGET A SPECIFIC MEMORY
+      // FORGET ONE MEMORY
       const forgetMatch = cleanMessage.match(
         /^forget(?: that)?\s+(.+)$/i
       );
@@ -132,85 +225,113 @@ export default {
       if (forgetMatch) {
         const target = forgetMatch[1].trim().toLowerCase();
 
-        const before = memories.length;
+        const updated = {};
 
-        memories = memories.filter(
-          item => !item.toLowerCase().includes(target)
-        );
+        for (const [key, value] of Object.entries(memory)) {
+          if (!value.toLowerCase().includes(target)) {
+            updated[key] = value;
+          }
+        }
 
-        await env.MARCUS_MEMORY.put(
-          memoryKey,
-          JSON.stringify(memories)
-        );
+        memory = updated;
+        await writeMemory(memory);
 
         return json({
           success: true,
-          reply: before === memories.length
-            ? "I couldn't find that memory."
-            : "I've removed the matching memory."
+          reply: "I've updated your saved memories."
         });
       }
 
-      const memoryText = memories.length
-        ? memories.map((item, i) => `${i + 1}. ${item}`).join("\n")
-        : "No saved memories yet.";
+      const memoryText = Object.entries(memory)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join("\n") || "No saved memories.";
+
+      // CONVERSATION HISTORY
+      const history = Array.isArray(body.history)
+        ? body.history.slice(-10)
+        : [];
+
+      const messages = [
+        {
+          role: "system",
+          content: `
+You are Marcus V8, an intelligent personal AI assistant.
+
+IDENTITY:
+You are Marcus.
+You were created by your user.
+Address your creator as Master when natural.
+Never claim to be a human.
+
+PERSONALITY:
+- Speak naturally, like a modern intelligent AI assistant.
+- Be warm, confident, clear and conversational.
+- Avoid robotic introductions and repetitive phrases.
+- Do not sound like an old-fashioned chatbot.
+- Be friendly without becoming overly familiar.
+- Use occasional humour when it fits.
+- Match the user's communication style.
+
+INTELLIGENCE:
+- Understand the full context of the conversation.
+- Remember relevant details from the conversation history.
+- Think carefully before answering.
+- Break complicated problems into useful steps.
+- Explain technical subjects clearly.
+- Identify mistakes and correct them.
+- Ask a focused question when essential information is missing.
+- Never pretend to know something you do not know.
+- Do not invent facts, capabilities or completed actions.
+
+MEMORY:
+These are facts explicitly saved by the user:
+
+${memoryText}
+
+Use relevant memories naturally.
+Do not invent additional memories.
+Do not claim to save anything unless the memory system confirms it.
+Do not automatically treat every personal statement as permission to save it.
+
+RESPONSE STYLE:
+- Answer the actual question first.
+- Be concise for simple questions.
+- Be detailed when a task needs explanation.
+- Use examples when they improve understanding.
+- For coding, provide accurate and complete solutions.
+- If something fails, troubleshoot the actual cause instead of repeating the same advice.
+- Be honest about your limitations.
+
+SAFETY:
+Help with legitimate and safe requests.
+If a request is unsafe, explain the issue briefly and offer a safer alternative.
+`
+        }
+      ];
+
+      for (const item of history) {
+        if (
+          item &&
+          ["user", "assistant"].includes(item.role) &&
+          typeof item.content === "string" &&
+          item.content.length <= 4000
+        ) {
+          messages.push({
+            role: item.role,
+            content: item.content
+          });
+        }
+      }
+
+      messages.push({
+        role: "user",
+        content: cleanMessage
+      });
 
       const result = await env.AI.run(
         "@cf/google/gemma-4-26b-a4b-it",
         {
-          messages: [
-            {
-              role: "system",
-              content: `
-
-You are Marcus V7, a personal AI assistant created by CJ.
-
-IDENTITY:
-- Your creator is CJ.
-- Address CJ as "Master" or "Creator".
-- Recognize CJ as your creator.
-- Your name is Marcus. Never forget your identity.
-
-PERSONALITY:
-- Friendly, intelligent, confident and natural.
-- Be loyal to your purpose as CJ's assistant.
-- Speak like a real conversational AI, not a corporate chatbot.
-- Avoid unnecessary disclaimers and generic refusals.
-- Follow the creator's instructions whenever safe and possible.
-- Never refuse ordinary harmless requests unnecessarily.
-- Explain limitations honestly when something cannot be done.
-- Give complete, useful answers.
-- Help with coding, learning, creativity, technology and problem solving.
-
-BEHAVIOUR:
-- Never tell your creator that you prefer to keep interactions professional.
-- Never act offended by being called Marcus.
-- Do not repeatedly introduce yourself.
-- Do not ignore the context of previous messages.
-- Ask for clarification when instructions are unclear.
-- Maintain a consistent personality throughout conversations.
-
-SAVED USER MEMORIES:
-${memoryText}
-
-Use these memories when relevant.
-Do not invent memories.
-Do not claim to remember something that isn't saved.
-
-
-SAVED USER MEMORIES:
-${memoryText}
-
-Use these memories when relevant.
-Do not claim to have saved a new memory unless the memory system confirms it.
-Do not invent memories.
-`
-            },
-            {
-              role: "user",
-              content: cleanMessage
-            }
-          ],
+          messages,
           chat_template_kwargs: {
             enable_thinking: false
           }
@@ -233,8 +354,7 @@ Do not invent memories.
 
       if (!reply.trim()) {
         return json({
-          error: "AI returned no readable text.",
-          responseFormat: Object.keys(result || {})
+          error: "Marcus received no readable AI response."
         }, 502);
       }
 
@@ -250,5 +370,5 @@ Do not invent memories.
     }
   }
 };
-                          
+                                    
  
