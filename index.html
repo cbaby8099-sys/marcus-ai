@@ -1,408 +1,382 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marcus AI V5</title>
+<title>Marcus AI V6</title>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+ margin:0;background:#080b12;color:white;
+ font-family:Arial,sans-serif;
+ min-height:100vh;
 }
-
-body {
-  margin: 0;
-  background: #080b12;
-  color: white;
-  font-family: Arial, sans-serif;
+header{
+ padding:20px;background:#101827;
+ border-bottom:1px solid #26364c;
+ display:flex;justify-content:space-between;
+ align-items:center;
 }
-
-header {
-  padding: 20px;
-  text-align: center;
-  background: #101827;
-  border-bottom: 1px solid #26354b;
+header h2{margin:0;color:#55c8ff}
+.status{font-size:12px;color:#55df9b}
+main{max-width:750px;margin:auto;padding:16px}
+.profile{
+ text-align:center;padding:22px 10px;
 }
-
-header h1 {
-  color: #00d9ff;
-  margin: 5px;
+.avatar{
+ width:75px;height:75px;border-radius:50%;
+ margin:auto;background:linear-gradient(135deg,#0878b9,#7c4dff);
+ display:grid;place-items:center;
+ font-size:30px;font-weight:bold;
+ box-shadow:0 0 30px #0878b966;
 }
-
-.status {
-  color: #54e69b;
-  font-size: 13px;
+.profile h2{margin-bottom:5px}
+.profile p{color:#9baec5;font-size:13px}
+#chat{
+ height:48vh;min-height:280px;overflow-y:auto;
+ padding:12px;background:#0d1420;
+ border:1px solid #26364c;border-radius:15px;
 }
-
-#chat {
-  height: 65vh;
-  overflow-y: auto;
-  padding: 15px;
+.message{
+ padding:12px 14px;margin:10px 0;
+ border-radius:13px;max-width:90%;
+ line-height:1.5;white-space:pre-wrap;
+ overflow-wrap:anywhere;
 }
-
-.message {
-  padding: 13px;
-  margin: 12px 0;
-  border-radius: 12px;
-  max-width: 88%;
-  line-height: 1.5;
-  white-space: pre-wrap;
+.user{background:#075b91;margin-left:auto}
+.marcus{background:#1a2637;margin-right:auto}
+small{color:#8fa5bd}
+.controls{
+ display:flex;gap:8px;margin-top:12px;
 }
-
-.marcus {
-  background: #172438;
-  border-left: 3px solid #00d9ff;
+input{
+ flex:1;min-width:0;padding:14px;
+ background:#121d2c;border:1px solid #34475f;
+ border-radius:12px;color:white;font-size:15px;
 }
-
-.user {
-  background: #174b65;
-  margin-left: auto;
+button{
+ border:0;border-radius:12px;
+ background:#087fba;color:white;
+ padding:12px 15px;font-weight:bold;
+ cursor:pointer;
 }
-
-.controls {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  padding: 15px;
-  background: #101827;
+button:active{opacity:.7}
+.secondary{background:#26364c}
+.panel{
+ margin-top:15px;background:#101827;
+ padding:15px;border-radius:13px;
+ border:1px solid #26364c;
 }
-
-.input-row {
-  display: flex;
-  gap: 8px;
-}
-
-input {
-  flex: 1;
-  min-width: 0;
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid #26354b;
-  background: #080b12;
-  color: white;
-}
-
-button {
-  padding: 12px;
-  border: none;
-  border-radius: 9px;
-  background: #00bfe8;
-  color: #001018;
-  font-weight: bold;
-}
-
-.options {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.options button {
-  background: #26354b;
-  color: white;
-}
-
-small {
-  display: block;
-  text-align: center;
-  color: #8495aa;
-  margin-top: 10px;
-}
+.panel h3{margin-top:0;color:#55c8ff}
+.panel button{margin:4px}
+#memoryList{font-size:13px;color:#b8c9dc}
+footer{text-align:center;padding:20px;color:#60758d;font-size:12px}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>MARCUS AI</h1>
-<div>Version 5.0</div>
-<p class="status">● ONLINE — MEMORY ACTIVE</p>
+ <h2>MARCUS AI</h2>
+ <span class="status">● ONLINE</span>
 </header>
 
-<div id="chat"></div>
+<main>
+
+<div class="profile">
+ <div class="avatar">M</div>
+ <h2>Marcus V6</h2>
+ <p>Personal AI Assistant · Developed by CJ</p>
+</div>
+
+<div id="chat">
+ <div class="message marcus">
+ Hello CJ. I am Marcus AI V6.
+ I am ready. What shall we work on today?
+ </div>
+</div>
 
 <div class="controls">
-
-<div class="input-row">
-<input id="input"
-placeholder="Talk to Marcus..."
-autocomplete="off">
-
-<button onclick="sendMessage()">SEND</button>
+ <input id="input" placeholder="Talk to Marcus..." autocomplete="off">
+ <button onclick="sendMessage()">SEND</button>
 </div>
 
-<div class="options">
-<button onclick="listen()">🎙️ TALK</button>
-<button onclick="speakToggle()">🔊 VOICE</button>
-<button onclick="clearChat()">CLEAR</button>
+<div class="controls">
+ <button class="secondary" onclick="startVoice()">🎙 Voice</button>
+ <button class="secondary" onclick="toggleSpeech()">🔊 Speech</button>
+ <button class="secondary" onclick="clearChat()">Clear chat</button>
 </div>
 
-<small>Marcus AI V5 | Personal AI Assistant</small>
-
+<div class="panel">
+ <h3>Marcus Memory</h3>
+ <input id="memoryInput" placeholder="Teach Marcus something...">
+ <div class="controls">
+  <button onclick="teachMarcus()">LEARN</button>
+  <button class="secondary" onclick="showMemory()">VIEW MEMORY</button>
+ </div>
+ <div id="memoryList"></div>
 </div>
+
+<div class="panel">
+ <h3>Marcus System</h3>
+ <p id="systemStatus">System initialized.</p>
+ <button class="secondary" onclick="identifyMarcus()">IDENTITY</button>
+ <button class="secondary" onclick="exportMemory()">EXPORT MEMORY</button>
+ <button class="secondary" onclick="forgetMemory()">RESET MEMORY</button>
+</div>
+
+</main>
+
+<footer>
+MARCUS AI V6 · Created by CJ
+</footer>
 
 <script>
+const $ = id => document.getElementById(id);
 
-// MARCUS AI V5 CORE
+let speechEnabled = true;
+let memories = {};
 
-const chat = document.getElementById("chat");
-const input = document.getElementById("input");
-
-let voiceEnabled = true;
-
-let memory = JSON.parse(
- localStorage.getItem("marcus_memory") || "[]"
-);
-
-let history = JSON.parse(
- localStorage.getItem("marcus_history") || "[]"
-);
-
-function saveMemory() {
- localStorage.setItem(
-  "marcus_memory",
-  JSON.stringify(memory)
+try {
+ memories = JSON.parse(
+  localStorage.getItem("marcus_v6_memory") || "{}"
  );
+} catch(e) {
+ memories = {};
+}
 
+let history = [];
+
+try {
+ history = JSON.parse(
+  sessionStorage.getItem("marcus_v6_history") || "[]"
+ );
+} catch(e) {
+ history = [];
+}
+
+function saveMemory(){
  localStorage.setItem(
-  "marcus_history",
+  "marcus_v6_memory",
+  JSON.stringify(memories)
+ );
+}
+
+function saveHistory(){
+ sessionStorage.setItem(
+  "marcus_v6_history",
   JSON.stringify(history)
  );
 }
 
-function displayMessage(text, sender) {
-
- const div = document.createElement("div");
-
- div.className = "message " + sender;
-
- div.textContent = text;
-
- chat.appendChild(div);
-
- chat.scrollTop = chat.scrollHeight;
+function addMessage(text,type){
+ const div=document.createElement("div");
+ div.className="message "+type;
+ div.textContent=text;
+ $("chat").appendChild(div);
+ $("chat").scrollTop=$("chat").scrollHeight;
 }
 
-function remember(text) {
+function respond(message){
+ const q=message.toLowerCase().trim();
 
- memory.push(text);
-
- if (memory.length > 30) {
-  memory.shift();
+ if(/who (created|made|developed) you|your creator|who is your creator/.test(q)){
+  return "My creator is CJ. I am Marcus AI, developed for CJ.";
  }
 
- saveMemory();
+ if(q.includes("your name") || q==="who are you"){
+  return "I am Marcus AI V6, your personal AI assistant. My creator is CJ.";
+ }
+
+ if(q.includes("hello") || q.includes("hi marcus")){
+  return "Hello CJ. I am here and ready. What are we building today?";
+ }
+
+ if(q.includes("how are you")){
+  return "My systems are running. I am ready to assist you, CJ.";
+ }
+
+ if(q.includes("time")){
+  return "The current device time is "+new Date().toLocaleTimeString()+".";
+ }
+
+ if(q.includes("date")){
+  return "Today's date is "+new Date().toLocaleDateString()+".";
+ }
+
+ if(q.includes("what do you remember")){
+  const keys=Object.keys(memories);
+  return keys.length
+   ? "Here is what I have learned: "+keys.map(k=>k+": "+memories[k]).join("; ")
+   : "I have no saved lessons yet. You can teach me using the Learn feature.";
+ }
+
+ if(q.startsWith("forget ")){
+  const key=message.substring(7).trim().toLowerCase();
+  if(memories[key]){
+   delete memories[key];
+   saveMemory();
+   return "I have removed the saved lesson called "+key+".";
+  }
+  return "I could not find that lesson in my memory.";
+ }
+
+ for(const key in memories){
+  if(q.includes(key)){
+   return memories[key];
+  }
+ }
+
+ if(q.includes("thank")){
+  return "You're welcome, CJ. What shall we do next?";
+ }
+
+ if(q.includes("help")){
+  return "I can answer basic questions, remember lessons you teach me, identify my creator, tell the date and time, and speak responses aloud. For broader intelligence, I need a connected AI API.";
+ }
+
+ return "I understand your message, CJ, but I don't yet have enough intelligence to answer that accurately. Marcus V6 needs a real AI API connection for general reasoning. You can also teach me using the Learn section.";
 }
 
-function speak(text) {
+function sendMessage(){
+ const input=$("input");
+ const message=input.value.trim();
+ if(!message)return;
 
- if (!voiceEnabled) return;
+ addMessage(message,"user");
+ input.value="";
 
- if (!("speechSynthesis" in window)) return;
+ const answer=respond(message);
+ addMessage(answer,"marcus");
 
- speechSynthesis.cancel();
+ history.push({user:message,marcus:answer});
+ saveHistory();
 
- const speech = new SpeechSynthesisUtterance(text);
-
- speech.rate = 1;
- speech.pitch = 1;
-
- speechSynthesis.speak(speech);
+ if(speechEnabled) speak(answer);
 }
 
-function speakToggle() {
-
- voiceEnabled = !voiceEnabled;
-
- alert(
-  voiceEnabled ? "Marcus voice ON" : "Marcus voice OFF"
- );
-}
-
-// CONVERSATION ENGINE
-
-function think(message) {
-
- const text = message.toLowerCase();
-
- if (
-  text.includes("hello") ||
-  text.includes("hi") ||
-  text.includes("hey")
- ) {
-  return "Hello! I'm Marcus AI V5. How can I help you today?";
- }
-
- if (text.includes("your name")) {
-  return "My name is Marcus. I am your personal AI assistant.";
- }
-
- if (text.includes("who created you")) {
-  return "I am Marcus AI, created as part of your AI project.";
- }
-
- if (text.includes("how are you")) {
-  return "My systems are running. What would you like us to work on?";
- }
-
- if (text.includes("remember")) {
-  return "I can store information in my browser memory. Tell me what you want me to remember.";
- }
-
- if (text.includes("memory")) {
-  return "My memory system is active. I can retain saved information in this browser.";
- }
-
- if (text.includes("trading")) {
-  return "Let's analyse trading carefully. Are we studying forex, EURUSD, or your MT5 project?";
- }
-
- if (text.includes("mt5")) {
-  return "MT5 development mode activated. We can work on your trading robot and analyse its code.";
- }
-
- if (text.includes("version")) {
-  return "I am Marcus AI Version 5.0.";
- }
-
- if (text.includes("thank")) {
-  return "You're welcome. What shall we work on next?";
- }
-
- if (text.includes("time")) {
-  return "The current time on your device is " +
-   new Date().toLocaleTimeString();
- }
-
- if (text.includes("what do you know about me")) {
-
-  return memory.length
-   ? "Here are some things I remember:\n" + memory.join("\n")
-   : "I haven't saved any personal memories yet.";
- }
-
- return "I understand what you're saying. Tell me a little more so I can help you properly.";
-}
-
-// SEND MESSAGE
-
-function sendMessage() {
-
- const message = input.value.trim();
-
- if (!message) return;
-
- displayMessage(message, "user");
-
- remember("User: " + message);
-
- history.push({
-  role: "user",
-  content: message
- });
-
- const response = think(message);
-
- setTimeout(() => {
-
-  displayMessage(response, "marcus");
-
-  history.push({
-   role: "assistant",
-   content: response
-  });
-
-  saveMemory();
-
-  speak(response);
-
- }, 400);
-
- input.value = "";
-}
-
-input.addEventListener("keydown", function(event) {
-
- if (event.key === "Enter") {
-  sendMessage();
- }
-
+$("input").addEventListener("keydown",e=>{
+ if(e.key==="Enter")sendMessage();
 });
 
-// VOICE RECOGNITION
+function speak(text){
+ if(!("speechSynthesis" in window))return;
+ speechSynthesis.cancel();
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.rate=1;
+ utterance.pitch=0.9;
+ speechSynthesis.speak(utterance);
+}
 
-function listen() {
+function toggleSpeech(){
+ speechEnabled=!speechEnabled;
+ $("systemStatus").textContent=
+  "Speech "+(speechEnabled?"enabled":"disabled");
+}
 
- const Recognition =
+function startVoice(){
+ const SpeechRecognition=
   window.SpeechRecognition ||
   window.webkitSpeechRecognition;
 
- if (!Recognition) {
-  alert("Voice recognition is not supported in this browser.");
+ if(!SpeechRecognition){
+  $("systemStatus").textContent=
+   "Voice recognition is not supported in this browser.";
   return;
  }
 
- const recognition = new Recognition();
+ const recognition=new SpeechRecognition();
+ recognition.lang="en-ZA";
+ recognition.interimResults=false;
 
- recognition.lang = "en-US";
- recognition.interimResults = false;
-
- recognition.onresult = function(event) {
-
-  input.value = event.results[0][0].transcript;
-
+ recognition.onresult=e=>{
+  $("input").value=e.results[0][0].transcript;
   sendMessage();
  };
 
- recognition.onerror = function() {
-  alert("Voice recognition failed. Try again.");
+ recognition.onerror=()=>{
+  $("systemStatus").textContent="Voice recognition error.";
  };
 
  recognition.start();
 }
 
-// CLEAR CHAT
+function teachMarcus(){
+ const value=$("memoryInput").value.trim();
+ if(!value)return;
 
-function clearChat() {
+ const split=value.indexOf(":");
+ if(split<1){
+  $("systemStatus").textContent=
+   "Use this format: topic: information";
+  return;
+ }
 
- if (!confirm("Clear Marcus conversation history?")) return;
+ const key=value.substring(0,split).trim().toLowerCase();
+ const info=value.substring(split+1).trim();
 
- history = [];
+ if(!info)return;
 
- chat.innerHTML = "";
+ memories[key]=info;
+ saveMemory();
 
- localStorage.removeItem("marcus_history");
+ $("memoryInput").value="";
+ $("systemStatus").textContent=
+  "Lesson saved successfully.";
+ addMessage("I have learned: "+key,"marcus");
+}
 
- displayMessage(
-  "Conversation cleared. My saved memory remains.",
+function showMemory(){
+ const keys=Object.keys(memories);
+
+ $("memoryList").textContent=keys.length
+  ? keys.map(k=>k+": "+memories[k]).join(" | ")
+  : "No saved lessons.";
+}
+
+function identifyMarcus(){
+ addMessage(
+  "I am Marcus AI V6. My creator is CJ. My purpose is to assist CJ.",
   "marcus"
  );
 }
 
-// RESTORE PREVIOUS CONVERSATION
-
-if (history.length > 0) {
-
- history.forEach(item => {
-
-  displayMessage(
-   item.content,
-   item.role === "user" ? "user" : "marcus"
-  );
-
- });
-
-} else {
-
- displayMessage(
-  "Hello! I'm Marcus AI V5. My systems are online. How can I help you?",
-  "marcus"
- );
-
+function clearChat(){
+ $("chat").innerHTML="";
+ history=[];
+ saveHistory();
 }
 
+function forgetMemory(){
+ if(!confirm("Delete all saved Marcus lessons?"))return;
+ memories={};
+ saveMemory();
+ showMemory();
+ $("systemStatus").textContent="Saved lessons cleared.";
+}
+
+function exportMemory(){
+ const data=JSON.stringify(memories,null,2);
+ const blob=new Blob([data],{type:"application/json"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;
+ a.download="marcus-memory.json";
+ a.click();
+ URL.revokeObjectURL(url);
+}
+
+history.forEach(item=>{
+ addMessage(item.user,"user");
+ addMessage(item.marcus,"marcus");
+});
+
+$("systemStatus").textContent=
+ "Marcus V6 initialized. Local memory ready.";
 </script>
 
 </body>
   </html>
+   
