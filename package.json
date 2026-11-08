@@ -1,0 +1,11 @@
+{
+  "name": "marcus-ai",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "openai": "^5.0.0"
+  }
+}
