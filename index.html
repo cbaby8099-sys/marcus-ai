@@ -1,352 +1,242 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#080b12">
-<meta name="description" content="Marcus AI personal assistant">
+<meta name="description" content="Marcus personal AI assistant">
 <link rel="manifest" href="./manifest.json">
-<title>Marcus AI V9</title>
-
+<title>Marcus AI V10</title>
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;background:#080b12;color:#f4f6fc;
- font-family:Arial,sans-serif;min-height:100vh
-}
-header{
- padding:16px;background:#101725;border-bottom:1px solid #263247;
- display:flex;align-items:center;justify-content:space-between
-}
-.logo{font-size:23px;font-weight:bold;color:#76a9ff}
-.status{font-size:12px;color:#63dc9a;margin-top:4px}
-main{max-width:700px;margin:auto;padding:14px}
-#chat{
- height:57vh;min-height:300px;overflow-y:auto;padding:12px;
- background:#0d1420;border:1px solid #253249;border-radius:15px
-}
-.msg{
- padding:12px 14px;margin:10px 0;border-radius:13px;
- line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere
-}
-.user{background:#19365e;margin-left:35px}
-.marcus{background:#192333;margin-right:25px}
-.system{text-align:center;color:#9baac0;font-size:12px}
-.controls{display:flex;gap:8px;margin-top:12px}
-textarea{
- flex:1;min-width:0;resize:none;height:54px;padding:14px;
- border-radius:12px;border:1px solid #34445c;
- background:#111c2c;color:white;font-size:15px
-}
-button{
- border:0;border-radius:10px;padding:12px;
- background:#2868d7;color:white;font-weight:bold
-}
+body{margin:0;background:#080b12;color:#eaf0ff;font-family:Arial,sans-serif}
+header{padding:18px;text-align:center;border-bottom:1px solid #202a40}
+h1{margin:0;color:#75a7ff}
+#status{font-size:12px;color:#91a5c8;margin-top:7px}
+main{max-width:720px;margin:auto;padding:14px}
+#chat{height:58vh;min-height:280px;overflow-y:auto;padding:8px}
+.msg{padding:13px;margin:10px 0;border-radius:14px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.user{background:#18345d;margin-left:30px}
+.marcus{background:#151e30;margin-right:30px}
+#controls{display:flex;gap:8px}
+input{min-width:0;flex:1;background:#111b2c;color:white;border:1px solid #34435f;border-radius:12px;padding:14px;font-size:16px}
+button{background:#2459a8;color:white;border:0;border-radius:10px;padding:12px;margin:3px;font-size:14px}
 button:disabled{opacity:.5}
-.tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.tools button{background:#202e43;font-size:12px}
-select{
- background:#172338;color:white;border:1px solid #34445c;
- border-radius:8px;padding:9px
-}
-#preview{
- max-width:100%;max-height:180px;display:none;
- margin-top:10px;border-radius:10px
-}
-#thinking{display:none;color:#91a9d0;padding:8px}
+.tools{margin-top:12px;display:flex;flex-wrap:wrap;gap:5px}
+#typing{color:#91a5c8;font-size:13px;padding:5px}
 </style>
 </head>
-
 <body>
 <header>
- <div>
-  <div class="logo">MARCUS AI</div>
-  <div class="status">● Personal assistant</div>
- </div>
- <select id="voiceMode">
-  <option value="on">Voice ON</option>
-  <option value="off">Voice OFF</option>
- </select>
+<h1>Marcus AI</h1>
+<div id="status">Connecting...</div>
 </header>
-
 <main>
- <div id="chat">
-  <div class="msg marcus">
-   Marcus V9 is ready. What's on your mind?
-  </div>
- </div>
-
- <div id="thinking">Marcus is thinking...</div>
- <img id="preview" alt="Selected image preview">
-
- <div class="controls">
-  <textarea id="message" placeholder="Talk to Marcus..."></textarea>
-  <button id="sendBtn" onclick="sendMessage()">SEND</button>
- </div>
-
- <div class="tools">
-  <button onclick="startVoice()">🎙 Speak</button>
-  <button onclick="document.getElementById('imageInput').click()">📷 Photo</button>
-  <button onclick="showMemory()">🧠 Memory</button>
-  <button onclick="exportMemory()">⬇ Export</button>
-  <button onclick="clearChat()">Clear chat</button>
- </div>
-
- <input id="imageInput" type="file"
- accept="image/png,image/jpeg,image/webp" hidden>
+<div id="chat"></div>
+<div id="typing"></div>
+<div id="controls">
+<input id="message" placeholder="Talk to Marcus..." autocomplete="off">
+<button id="send">Send</button>
+</div>
+<div class="tools">
+<button id="voice">🎙 Voice</button>
+<button id="speak">🔊 Speak</button>
+<button id="memory">🧠 Memory</button>
+<button id="install" hidden>📱 Install Marcus</button>
+<button id="clear">Clear chat</button>
+</div>
 </main>
-
 <script>
 const WORKER_URL="https://marcus-ai.cbaby8099.workers.dev";
+const $=id=>document.getElementById(id);
+const chat=$("chat");
+const statusText=$("status");
+const input=$("message");
 
-const userId=localStorage.getItem("marcus_user_id")||
-("marcus_"+Math.random().toString(36).slice(2));
+let history=[];
+let lastReply="";
+let waiting=false;
+let installPrompt=null;
 
-localStorage.setItem("marcus_user_id",userId);
+let userId=localStorage.getItem("marcus_user_id");
+if(!userId){
+ userId="marcus-"+Math.random().toString(36).slice(2);
+ localStorage.setItem("marcus_user_id",userId);
+}
 
-const chat=document.getElementById("chat");
-const messageBox=document.getElementById("message");
-const thinking=document.getElementById("thinking");
-const sendBtn=document.getElementById("sendBtn");
-const imageInput=document.getElementById("imageInput");
-const preview=document.getElementById("preview");
+function saveHistory(){
+ localStorage.setItem("marcus_v10_history",JSON.stringify(history.slice(-40)));
+}
 
-let history=JSON.parse(
- sessionStorage.getItem("marcus_v7_history")||"[]"
-);
-
-let selectedImage=null;
-let memory={};
-
-function addMessage(text,type){
+function displayMessage(text,role){
  const div=document.createElement("div");
- div.className="msg "+type;
+ div.className="msg "+(role==="user"?"user":"marcus");
  div.textContent=text;
  chat.appendChild(div);
  chat.scrollTop=chat.scrollHeight;
 }
 
-function getWorkerHistory(){
- return history.slice(-6).flatMap(item=>[
-  {role:"user",content:item.user},
-  {role:"assistant",content:item.marcus}
- ]);
+function addMessage(text,role){
+ history.push({role,content:text});
+ displayMessage(text,role);
 }
 
-function saveHistory(){
- history=history.slice(-10);
- sessionStorage.setItem(
-  "marcus_v7_history",JSON.stringify(history)
- );
+function showSavedChat(){
+ try{
+  let saved=JSON.parse(localStorage.getItem("marcus_v10_history")||"null");
+  if(!saved){
+   const old=JSON.parse(sessionStorage.getItem("marcus_v7_history")||"[]");
+   saved=old.flatMap(x=>[
+    {role:"user",content:x.user},
+    {role:"assistant",content:x.marcus}
+   ]);
+  }
+  if(Array.isArray(saved)){
+   history=saved.slice(-40);
+   history.forEach(m=>displayMessage(m.content,m.role));
+   saveHistory();
+  }
+ }catch(e){history=[]}
 }
 
-async function api(action,data={}){
+async function request(action,data={}){
  const response=await fetch(WORKER_URL,{
   method:"POST",
   headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-   action,
-   userId,
-   ...data
-  })
+  body:JSON.stringify({action,userId,...data})
  });
-
  const result=await response.json();
-
- if(!response.ok||result.success===false||result.error){
-  throw new Error(result.error||"Marcus connection failed.");
- }
-
+ if(!response.ok)throw new Error(result.error||"Server error");
  return result;
 }
 
 async function sendMessage(){
- const text=messageBox.value.trim();
+ const message=input.value.trim();
+ if(!message||waiting)return;
 
- if(!text&&!selectedImage)return;
+ input.value="";
+ addMessage(message,"user");
+ saveHistory();
 
- messageBox.value="";
- addMessage(text||"Please look at this image.","user");
-
- sendBtn.disabled=true;
- thinking.style.display="block";
+ waiting=true;
+ $("send").disabled=true;
+ $("typing").textContent="Marcus is thinking...";
 
  try{
-  const result=await api("chat",{
-   message:text,
-   history:getWorkerHistory(),
-   imageData:selectedImage
+  const previousHistory=history.slice(0,-1).slice(-12);
+  const result=await request("chat",{
+   message,
+   history:previousHistory
   });
-
-  const reply=result.reply||
-  "I couldn't generate a reply. Try again.";
-
-  addMessage(reply,"marcus");
-
-  history.push({
-   user:text||"[Image sent]",
-   marcus:reply
-  });
-
+  const reply=result.reply||result.response||"I couldn't create a reply.";
+  lastReply=reply;
+  addMessage(reply,"assistant");
   saveHistory();
-
-  if(document.getElementById("voiceMode").value==="on"){
-   speak(reply);
-  }
-
-  selectedImage=null;
-  preview.style.display="none";
-  imageInput.value="";
-
+  statusText.textContent="Marcus is online";
  }catch(error){
-  addMessage("Connection error: "+error.message,"system");
+  addMessage("Connection error: "+error.message,"assistant");
+  saveHistory();
+  statusText.textContent="Connection problem";
  }finally{
-  sendBtn.disabled=false;
-  thinking.style.display="none";
+  waiting=false;
+  $("send").disabled=false;
+  $("typing").textContent="";
+  input.focus();
  }
 }
 
-function speak(text){
- if(!("speechSynthesis" in window))return;
-
- speechSynthesis.cancel();
-
- const utterance=new SpeechSynthesisUtterance(text);
- utterance.rate=1.05;
- utterance.pitch=1;
-
- speechSynthesis.speak(utterance);
-}
-
-function startVoice(){
- const SpeechRecognition=
- window.SpeechRecognition||window.webkitSpeechRecognition;
-
- if(!SpeechRecognition){
-  addMessage(
-   "Voice input is not supported in this browser.","system"
-  );
-  return;
- }
-
- const recognition=new SpeechRecognition();
- recognition.lang="en-ZA";
- recognition.interimResults=false;
-
- recognition.onresult=(event)=>{
-  messageBox.value=event.results[0][0].transcript;
-  sendMessage();
- };
-
- recognition.onerror=()=>{
-  addMessage("Voice input failed. Try again.","system");
- };
-
- recognition.start();
-}
-
-imageInput.addEventListener("change",async()=>{
- const file=imageInput.files[0];
- if(!file)return;
-
- if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
-  addMessage("Please choose a JPG, PNG or WebP image.","system");
-  return;
- }
-
- if(file.size>5*1024*1024){
-  addMessage("Image must be smaller than 5 MB.","system");
-  return;
- }
-
- try{
-  const bitmap=await createImageBitmap(file);
-  const canvas=document.createElement("canvas");
-
-  const scale=Math.min(
-   1,1100/Math.max(bitmap.width,bitmap.height)
-  );
-
-  canvas.width=Math.round(bitmap.width*scale);
-  canvas.height=Math.round(bitmap.height*scale);
-
-  canvas.getContext("2d").drawImage(
-   bitmap,0,0,canvas.width,canvas.height
-  );
-
-  selectedImage=canvas.toDataURL("image/jpeg",0.78);
-
-  preview.src=selectedImage;
-  preview.style.display="block";
-
-  bitmap.close();
-
- }catch(error){
-  addMessage("Couldn't process this image.","system");
- }
+$("send").onclick=sendMessage;
+input.addEventListener("keydown",e=>{
+ if(e.key==="Enter")sendMessage();
 });
 
-async function showMemory(){
- try{
-  const result=await api("get_memory");
-  memory=result.memory||{};
-
-  addMessage(
-   "Marcus memory:\n"+JSON.stringify(memory,null,2),
-   "marcus"
-  );
-
- }catch(error){
-  addMessage("Memory error: "+error.message,"system");
- }
-}
-
-async function exportMemory(){
- try{
-  const result=await api("get_memory");
-  memory=result.memory||{};
-
-  const blob=new Blob(
-   [JSON.stringify(memory,null,2)],
-   {type:"application/json"}
-  );
-
-  const url=URL.createObjectURL(blob);
-  const link=document.createElement("a");
-
-  link.href=url;
-  link.download="marcus-memory.json";
-  link.click();
-
-  URL.revokeObjectURL(url);
-
- }catch(error){
-  addMessage("Export failed: "+error.message,"system");
- }
-}
-
-function clearChat(){
- if(!confirm("Clear this chat history?"))return;
-
+$("clear").onclick=()=>{
  history=[];
- sessionStorage.removeItem("marcus_v7_history");
+ lastReply="";
+ localStorage.removeItem("marcus_v10_history");
  chat.innerHTML="";
- addMessage("Chat cleared. I'm ready.","marcus");
+ $("typing").textContent="";
+};
+
+$("memory").onclick=async()=>{
+ statusText.textContent="Loading memory...";
+ try{
+  const result=await request("get_memory");
+  const memory=typeof result.memory==="undefined"?result:result.memory;
+  addMessage("Marcus memory:\n"+JSON.stringify(memory,null,2),"assistant");
+  saveHistory();
+  statusText.textContent="Memory loaded";
+ }catch(error){
+  addMessage("Memory error: "+error.message,"assistant");
+  saveHistory();
+  statusText.textContent="Memory unavailable";
+ }
+};
+
+$("speak").onclick=()=>{
+ if(!lastReply||!("speechSynthesis" in window))return;
+ speechSynthesis.cancel();
+ const speech=new SpeechSynthesisUtterance(lastReply);
+ speech.lang="en-ZA";
+ speechSynthesis.speak(speech);
+};
+
+$("voice").onclick=()=>{
+ const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!Recognition){
+  addMessage("Voice input is not supported in this browser.","assistant");
+  saveHistory();
+  return;
+ }
+ const recognition=new Recognition();
+ recognition.lang="en-ZA";
+ recognition.onresult=e=>{
+  input.value=e.results[0][0].transcript;
+  sendMessage();
+ };
+ recognition.onerror=()=>statusText.textContent="Voice input error";
+ recognition.start();
+};
+
+window.addEventListener("beforeinstallprompt",e=>{
+ e.preventDefault();
+ installPrompt=e;
+ $("install").hidden=false;
+});
+
+$("install").onclick=async()=>{
+ if(!installPrompt)return;
+ installPrompt.prompt();
+ await installPrompt.userChoice;
+ installPrompt=null;
+ $("install").hidden=true;
+};
+
+window.addEventListener("appinstalled",()=>{
+ statusText.textContent="Marcus installed on your phone";
+ $("install").hidden=true;
+});
+
+async function connect(){
+ try{
+  const response=await fetch(WORKER_URL);
+  statusText.textContent=response.ok?"Marcus is online":"Worker needs attention";
+ }catch(e){
+  statusText.textContent="Cannot connect to Marcus";
+ }
 }
 
-messageBox.addEventListener("keydown",(event)=>{
- if(event.key==="Enter"&&!event.shiftKey){
-  event.preventDefault();
-  sendMessage();
- }
-});
+showSavedChat();
 
 if("serviceWorker" in navigator){
  window.addEventListener("load",()=>{
-  navigator.serviceWorker.register("./service-worker.js")
-   .catch(error=>console.log("Service worker:",error));
+  navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
  });
 }
+
+connect();
 </script>
 </body>
- </html>
+</html>
+
