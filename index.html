@@ -449,30 +449,39 @@ $("voice").onclick = () => {
 };
 
 // INSTALL
+const installButton = $("install");
+
+// Always show the installation button
+installButton.hidden = false;
+
 window.addEventListener("beforeinstallprompt", event => {
   event.preventDefault();
-
   installPrompt = event;
-
-  $("install").hidden = false;
+  installButton.hidden = false;
 });
 
-$("install").onclick = async () => {
-  if (!installPrompt) return;
+installButton.onclick = async () => {
+  if (!installPrompt) {
+    alert(
+      "Chrome has not provided an installation prompt yet. " +
+      "Marcus is still available in your browser."
+    );
+    return;
+  }
 
   installPrompt.prompt();
 
   await installPrompt.userChoice;
 
   installPrompt = null;
-
-  $("install").hidden = true;
 };
 
 window.addEventListener("appinstalled", () => {
   statusText.textContent = "Marcus installed successfully";
-  $("install").hidden = true;
+  installButton.hidden = true;
 });
+  
+
 
 // CONNECTION
 async function connect() {
