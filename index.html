@@ -537,9 +537,201 @@ function handleVoiceTranscript(transcript){
       .replace(/\bmarcus\b/i,"")
       .trim();
 
-    voiceMode = "live";
 
-    statusText.textContent = "Marcus activated.";
+// SPEECH OUTPUT + VOICE RECOGNITION
+function stopRecognitionSession(){
+  const old = recognition;
+  recognition = null;
+
+  if(old){
+    old.onstart = null;
+    old.onresult = null;
+    old.onerror = null;
+    old.onend = null;
+
+    try{
+      old.stop();
+    }catch(error){}
+  }
+}
+
+function speakText(text){
+  if(!("speechSynthesis" in window)) return;
+
+  clearTimeout(voiceRestartTimer);
+  stopRecognitionSession();
+
+  speechSynthesis.cancel();
+  speaking = true;
+
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "en-ZA";
+  speech.rate = 1;
+  speech.pitch = 1;
+
+  speech.onend = ()=>{
+    speaking = false;
+    if(voiceMode !== "off") scheduleRecognition();
+  };
+
+  speech.onerror = ()=>{
+    speaking = false;
+    if(voiceMode !== "off") scheduleRecognition();
+  };
+
+  speechSynthesis.speak(speech);
+}
+
+$("speak").onclick = ()=>{
+  if(lastReply) speakText(lastReply);
+};
+
+$("stopSpeak").onclick = ()=>{
+  if("speechSynthesis" in window){
+    speechSynthesis.cancel();
+  }
+
+  speaking = false;
+
+  if(voiceMode !== "off"){
+    scheduleRecognition();
+  }
+};
+
+// VOICE RECOGNITION
+function getRecognition(){
+  const Recognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if(!Recognition) return null;
+
+  const r = new Recognition();
+  r.lang = "en-ZA";
+  r.continuous = true;
+  r.interimResults = false;
+  r.maxAlternatives = 1;
+
+  return r;
+}
+
+function scheduleRecognition(){
+  clearTimeout(voiceRestartTimer);
+
+  if(
+    voiceMode === "off" ||
+    waiting ||
+    speaking ||
+    recognition
+  ) return;
+
+  voiceRestartTimer = setTimeout(()=>{
+    startRecognition();
+  },1000);
+}
+
+function startRecognition(){
+  if(
+    voiceMode === "off" ||
+    waiting ||
+    speaking ||
+    recognition
+  ) return;
+
+  const r = getRecognition();
+
+  if(!r){
+    stopVoice();
+    statusText.textContent =
+      "Speech recognition is not supported.";
+    return;
+  }
+
+  recognition = r;
+  recognitionAvailable = true;
+
+  r.onstart = ()=>{
+    statusText.textContent =
+      voiceMode === "live"
+        ? "Live voice: listening..."
+        : "Listening for Marcus...";
+  };
+
+  r.onresult = event=>{
+    for(let i=event.resultIndex;i<event.results.length;i++){
+
+      if(!event.results[i].isFinal) continue;
+
+      const transcript =
+        event.results[i][0].transcript.trim();
+
+      if(!transcript) continue;
+
+      // In wake mode, ignore speech until Marcus is called.
+      if(voiceMode === "wake"){
+        if(!/\bmarcus\b/i.test(transcript)) continue;
+      }
+
+      // End this recognition session before processing speech.
+      stopRecognitionSession();
+
+      handleVoiceTranscript(transcript);
+      return;
+    }
+  };
+
+  r.onerror = event=>{
+    if(
+      event.error === "not-allowed" ||
+      event.error === "service-not-allowed"
+    ){
+      stopVoice();
+      statusText.textContent =
+        "Microphone permission is required.";
+    }else{
+      statusText.textContent =
+        "Voice interrupted. Reconnecting...";
+    }
+  };
+
+  r.onend = ()=>{
+    if(recognition === r){
+      recognition = null;
+    }
+
+    if(
+      voiceMode !== "off" &&
+      !waiting &&
+      !speaking
+    ){
+      scheduleRecognition();
+    }
+  };
+
+  try{
+    r.start();
+  }catch(error){
+    if(recognition === r){
+      recognition = null;
+    }
+
+    scheduleRecognition();
+  }
+}
+
+// HANDLE SPOKEN WORDS
+function handleVoiceTranscript(transcript){
+
+  if(voiceMode === "off" || waiting) return;
+
+  if(voiceMode === "wake"){
+    if(!/\bmarcus\b/i.test(transcript)) return;
+
+    const command = transcript
+      .replace(/\bmarcus\b/i,"")
+      .trim();
+
+    voiceMode = "live";
 
     if(command){
       sendMessage(command);
@@ -567,13 +759,13 @@ $("wake").onclick = ()=>{
 
 function startVoice(mode){
 
+  stopVoice();
+
   if(!getRecognition()){
     statusText.textContent =
       "Voice recognition is not supported in this browser.";
     return;
   }
-
-  stopVoice();
 
   voiceMode = mode;
 
@@ -582,7 +774,7 @@ function startVoice(mode){
       ? "Starting live conversation..."
       : "Waiting for the name Marcus...";
 
-  startRecognition();
+  scheduleRecognition();
 }
 
 // STOP VOICE
@@ -591,24 +783,20 @@ function stopVoice(){
 
   clearTimeout(voiceRestartTimer);
 
-  if(recognition){
-    recognition.onend = null;
-    recognition.onerror = null;
-
-    try{recognition.stop();}catch(error){}
-
-    recognition = null;
-  }
+  stopRecognitionSession();
 
   if("speechSynthesis" in window){
     speechSynthesis.cancel();
   }
 
   speaking = false;
-  statusText.textContent = "Voice stopped · Marcus is online";
+
+  statusText.textContent =
+    "Voice stopped · Marcus is online";
 }
 
 $("stopVoice").onclick = stopVoice;
+  
 
 // IMAGE PICKER
 $("image").onclick = ()=>{
