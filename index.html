@@ -2,840 +2,522 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#080b12">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070a12">
 <meta name="description" content="Marcus AI Personal Assistant">
 <link rel="manifest" href="./manifest.json">
 <title>Marcus AI V10</title>
-
 <style>
+:root{
+  color-scheme:dark;
+  --bg:#070a12;--panel:#0d1422;--panel2:#111c2e;
+  --line:rgba(111,157,255,.18);--blue:#4b8dff;
+  --cyan:#39d9ff;--text:#edf4ff;--muted:#8294b5;
+  --glow:0 0 28px rgba(57,145,255,.22);
+}
 *{box-sizing:border-box}
+html,body{min-height:100%;margin:0}
 body{
-  margin:0;background:#080b12;color:#eaf0ff;
-  font-family:Arial,sans-serif
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(28,83,166,.22),transparent 42%),
+    radial-gradient(ellipse at 100% 75%,rgba(0,191,255,.07),transparent 35%),
+    var(--bg);
+  color:var(--text);font-family:Inter,Arial,sans-serif;
 }
-header{
-  padding:20px;text-align:center;background:#101827;
-  border-bottom:1px solid #263247
-}
-h1{margin:0;color:#75a7ff;font-size:28px;letter-spacing:1px}
-#status{color:#91a5c8;font-size:12px;margin-top:8px}
-main{max-width:760px;margin:auto;padding:14px}
-#chat{
-  height:55vh;min-height:280px;overflow-y:auto;
-  padding:10px;scroll-behavior:smooth
-}
-.msg{
-  padding:13px;margin:10px 0;border-radius:14px;
-  line-height:1.6;white-space:pre-wrap;
-  overflow-wrap:anywhere;max-width:90%
-}
-.user{background:#18345d;margin-left:auto}
-.marcus{background:#151e30;margin-right:auto}
-#typing{color:#91a5c8;font-size:13px;padding:7px;min-height:25px}
-#controls{display:flex;gap:8px}
-#message{
-  min-width:0;flex:1;background:#111b2c;color:white;
-  border:1px solid #34435f;border-radius:12px;
-  padding:14px;font-size:16px
-}
-#message:focus{outline:1px solid #75a7ff}
+button,input{font:inherit}
 button{
-  background:#2459a8;color:white;border:0;
-  border-radius:10px;padding:12px;margin:3px;
-  font-size:13px;cursor:pointer
+  border:1px solid rgba(103,159,255,.22);border-radius:13px;
+  color:var(--text);background:#14233a;padding:11px 14px;
+  cursor:pointer;transition:transform .15s,border-color .15s,background .15s;
 }
-button:disabled{opacity:.5;cursor:not-allowed}
-.tools{margin-top:12px;display:flex;flex-wrap:wrap;gap:5px}
-#voice{background:#176b63}
-#wake{background:#624a9c}
-#stopVoice{background:#853d4b}
+button:active{transform:scale(.97)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.app{width:min(820px,100%);min-height:100dvh;margin:auto;padding:0 15px 22px;display:flex;flex-direction:column}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:17px 3px 12px;border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-mark{
+  width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#173d78,#07172c);
+  border:1px solid rgba(75,141,255,.55);box-shadow:var(--glow);
+  color:#a9eaff;font-size:20px;font-weight:800;
+}
+h1{font-size:19px;letter-spacing:2.5px;margin:0;font-weight:800}
+.version{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:4px}
+#status{font-size:11px;color:#9eb3d8;text-align:right;max-width:48%}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#36d6a0;margin-right:6px;box-shadow:0 0 10px #36d6a0}
+.hero{text-align:center;padding:20px 0 14px}
+.orb-wrap{height:116px;display:grid;place-items:center}
+.orb{
+  width:88px;height:88px;border-radius:50%;position:relative;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,#72dfff 0,#2677e8 24%,#102e62 57%,#07101f 76%);
+  border:1px solid rgba(110,205,255,.8);box-shadow:0 0 25px rgba(31,133,255,.42),inset 0 0 22px rgba(83,205,255,.3);
+}
+.orb:before,.orb:after{content:"";position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(67,157,255,.35);animation:pulse 3s ease-out infinite}
+.orb:after{inset:-16px;animation-delay:1.5s}
+.orb span{font-size:29px;color:#e8faff;text-shadow:0 0 14px #69dcff}
+@keyframes pulse{0%{transform:scale(.88);opacity:.75}100%{transform:scale(1.25);opacity:0}}
+.hero h2{font-size:18px;margin:4px 0 5px;letter-spacing:.4px}
+.hero p{margin:0;color:var(--muted);font-size:12px}
+.voice-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:15px}
+.voice-actions button{min-width:128px}
+#voice{background:linear-gradient(135deg,#145cae,#087eaa);border-color:#3caeff;box-shadow:var(--glow)}
+#wake{background:#171d3d;border-color:#554fa6}
+#stopVoice{background:#281923;border-color:#71404e}
+#autoSpeak{background:#102b31;border-color:#236c78}
+#autoSpeak.off{background:#1b2030;border-color:#39445a;color:#a5b2c9}
+.chat-shell{
+  flex:1;min-height:240px;border:1px solid var(--line);border-radius:19px;
+  background:linear-gradient(180deg,rgba(13,20,34,.88),rgba(8,13,23,.92));
+  box-shadow:0 12px 38px rgba(0,0,0,.18);overflow:hidden;
+}
+.chat-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.chat-head strong{font-size:12px;letter-spacing:1px}
+.chat-head span{font-size:10px;color:var(--muted)}
+#chat{height:min(39vh,390px);min-height:230px;overflow-y:auto;padding:12px;scroll-behavior:smooth}
+.msg-row{display:flex;flex-direction:column;margin:10px 0;max-width:92%}
+.msg-row.user-row{margin-left:auto;align-items:flex-end}
+.msg-row.marcus-row{margin-right:auto;align-items:flex-start}
+.msg{
+  padding:12px 14px;border-radius:15px;line-height:1.55;
+  white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;
+}
+.user{background:linear-gradient(135deg,#17477e,#12325b);border:1px solid rgba(85,159,255,.25);border-bottom-right-radius:5px}
+.marcus{background:#131f32;border:1px solid rgba(100,143,207,.15);border-bottom-left-radius:5px}
+.msg-tools{display:flex;gap:6px;margin-top:5px}
+.msg-tools button{font-size:10px;padding:5px 9px;border-radius:8px;background:transparent;color:#9fb8df}
+#typing{min-height:20px;padding:0 15px 8px;color:#7fafea;font-size:11px}
+.composer{padding:11px;border-top:1px solid var(--line)}
+#attachment{display:none;margin:0 0 9px;padding:8px 10px;background:#122039;border-radius:10px;color:#b9d0ff;font-size:12px}
+#attachment button{padding:4px 8px;margin-left:8px;background:#402432}
+.controls{display:flex;gap:8px;align-items:center}
+#message{
+  min-width:0;flex:1;background:#0a1220;color:white;border:1px solid #263d60;
+  border-radius:13px;padding:14px;font-size:15px;
+}
+#send{background:linear-gradient(135deg,#276bd0,#167eb5);font-weight:700;min-width:68px}
 #imageInput{display:none}
-#attachment{
-  display:none;margin-top:9px;padding:10px;
-  background:#151e30;border-radius:10px;
-  font-size:13px;color:#b9d0ff
+.extra-tools{display:flex;gap:7px;flex-wrap:wrap;padding:11px 2px 0}
+.extra-tools button{font-size:11px;padding:8px 10px;background:#101a2b;color:#a9bddc}
+#install[hidden]{display:none}
+.footer{text-align:center;color:#526783;font-size:10px;padding:14px 0 0;letter-spacing:.6px}
+@media(min-width:700px){
+  .app{padding-left:24px;padding-right:24px}
+  #chat{height:42vh}
+  .hero{padding-top:24px}
 }
-#attachment button{background:#713c4c;padding:6px}
-.small{color:#91a5c8;font-size:11px;text-align:center;margin-top:15px}
-@media(max-width:400px){
-  main{padding:9px}
-  button{padding:10px;font-size:12px}
+@media(max-width:420px){
+  .app{padding-left:10px;padding-right:10px}
+  .voice-actions button{min-width:0;flex:1;font-size:11px;padding:10px 8px}
+  #chat{height:36vh}
+  .msg-row{max-width:96%}
 }
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
-
 <body>
-<header>
-  <h1>MARCUS AI</h1>
-  <div id="status">Starting Marcus V10...</div>
-</header>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div><h1>MARCUS AI</h1><div class="version">PERSONAL ASSISTANT · V10</div></div>
+    </div>
+    <div id="status"><span class="status-dot"></span>Starting Marcus...</div>
+  </header>
 
-<main>
-  <div id="chat"></div>
-  <div id="typing"></div>
+  <section class="hero" aria-label="Marcus voice assistant">
+    <div class="orb-wrap"><div class="orb"><span>✦</span></div></div>
+    <h2>Your assistant is ready.</h2>
+    <p>Talk naturally, or type a message below.</p>
+    <div class="voice-actions">
+      <button id="voice">🎙 Start Live Voice</button>
+      <button id="wake">👂 Wake Marcus</button>
+      <button id="stopVoice">■ Stop Voice</button>
+      <button id="autoSpeak">🔊 Auto-speak: ON</button>
+    </div>
+  </section>
 
-  <div id="controls">
-    <input id="message" placeholder="Talk to Marcus..." autocomplete="off">
-    <button id="send">Send</button>
-  </div>
+  <section class="chat-shell">
+    <div class="chat-head"><strong>CONVERSATION</strong><span>Private session</span></div>
+    <div id="chat" aria-live="polite"></div>
+    <div id="typing" aria-live="polite"></div>
+    <div class="composer">
+      <div id="attachment"><span id="attachmentName">Image attached</span><button id="removeImage">Remove</button></div>
+      <div class="controls">
+        <input id="message" placeholder="Message Marcus..." autocomplete="off" aria-label="Message Marcus">
+        <button id="send">Send</button>
+      </div>
+      <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp">
+    </div>
+  </section>
 
-  <div id="attachment">
-    <span id="attachmentName">Image attached</span>
-    <button id="removeImage">Remove</button>
-  </div>
-
-  <input type="file" id="imageInput"
-    accept="image/png,image/jpeg,image/webp">
-
-  <div class="tools">
-    <button id="voice">📞 Live Voice</button>
-    <button id="wake">👂 Wake Marcus</button>
-    <button id="stopVoice">⏹ Stop Voice</button>
-    <button id="speak">🔊 Speak</button>
-    <button id="stopSpeak">Stop Speaking</button>
-    <button id="image">🖼 Image</button>
+  <div class="extra-tools">
+    <button id="speak">🔊 Replay last reply</button>
+    <button id="stopSpeak">⏹ Stop speaking</button>
+    <button id="image">▧ Add image</button>
     <button id="memory">🧠 Memory</button>
     <button id="install" hidden>📱 Install</button>
-    <button id="clear">Clear Chat</button>
+    <button id="clear">Clear chat</button>
   </div>
-
-  <div class="small">Marcus AI V10 · Personal AI Assistant</div>
-</main>
+  <div class="footer">MARCUS AI V10 · OBSIDIAN / ELECTRIC BLUE</div>
+</div>
 
 <script>
 "use strict";
 
-/* CONFIGURATION */
-const WORKER_URL =
-  "https://marcus-ai.cbaby8099.workers.dev";
-
+/* Existing Cloudflare Worker and identity storage are preserved. */
+const WORKER_URL = "https://marcus-ai.cbaby8099.workers.dev";
 const $ = id => document.getElementById(id);
-
-const chat = $("chat");
-const input = $("message");
-const statusText = $("status");
-
+const chat = $("chat"), input = $("message"), statusText = $("status");
 const HISTORY_KEY = "marcus_v10_history";
 const OLD_HISTORY_KEY = "marcus_v9_history";
 
-/* APPLICATION STATE */
-let history = [];
-let lastReply = "";
-let waiting = false;
-let installPrompt = null;
-let selectedImage = null;
+let history = [], lastReply = "", waiting = false;
+let installPrompt = null, selectedImage = null;
+let recognition = null, voiceMode = "off", voiceRestartTimer = null;
+let speaking = false, speechToken = 0;
+let autoSpeak = localStorage.getItem("marcus_auto_speak") !== "false";
 
-/* PRESERVE EXISTING USER IDENTITY */
 let userId = localStorage.getItem("marcus_user_id");
-
 if(!userId){
-  userId = "marcus-" +
-    (window.crypto && crypto.randomUUID
-      ? crypto.randomUUID().replace(/-/g,"")
-      : Math.random().toString(36).slice(2) +
-        Date.now().toString(36));
-
+  userId = "marcus-" + (window.crypto && crypto.randomUUID
+    ? crypto.randomUUID().replace(/-/g,"")
+    : Math.random().toString(36).slice(2) + Date.now().toString(36));
   localStorage.setItem("marcus_user_id",userId);
 }
 
-/* VOICE STATE */
-let recognition = null;
-let voiceMode = "off";
-let voiceRestartTimer = null;
-let speaking = false;
-let speechToken = 0;
-
-/* DISPLAY */
-function displayMessage(text,role){
-  const div = document.createElement("div");
-
-  div.className = "msg " +
-    (role === "user" ? "user" : "marcus");
-
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+function setStatus(message,active=false){
+  statusText.innerHTML = "";
+  const dot = document.createElement("span");
+  dot.className = "status-dot";
+  dot.style.background = active ? "#39d9ff" : "#36d6a0";
+  dot.style.boxShadow = active ? "0 0 10px #39d9ff" : "0 0 10px #36d6a0";
+  statusText.append(dot,document.createTextNode(message));
 }
+function scrollChat(){chat.scrollTop=chat.scrollHeight;}
 
+function displayMessage(text,role){
+  const row = document.createElement("div");
+  row.className = "msg-row " + (role === "user" ? "user-row" : "marcus-row");
+  const bubble = document.createElement("div");
+  bubble.className = "msg " + (role === "user" ? "user" : "marcus");
+  bubble.textContent = text;
+  row.appendChild(bubble);
+
+  if(role !== "user"){
+    const tools = document.createElement("div");
+    tools.className = "msg-tools";
+    const play = document.createElement("button");
+    play.type = "button";
+    play.textContent = "🔊 Speak";
+    play.setAttribute("aria-label","Speak this Marcus reply");
+    play.onclick = ()=>speakText(text);
+    tools.appendChild(play);
+    row.appendChild(tools);
+    lastReply = text;
+  }
+  chat.appendChild(row);
+  scrollChat();
+}
 function addMessage(text,role){
-  history.push({
-    role:role === "user" ? "user" : "assistant",
-    content:text
-  });
-
+  history.push({role:role==="user"?"user":"assistant",content:text});
   displayMessage(text,role);
 }
-
-/* HISTORY */
 function saveHistory(){
-  try{
-    localStorage.setItem(
-      HISTORY_KEY,
-      JSON.stringify(history.slice(-50))
-    );
-  }catch(error){
-    console.log("History save failed",error);
-  }
+  try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history.slice(-50)));}
+  catch(error){console.log("History save failed",error);}
 }
-
 function showSavedChat(){
   try{
-    let saved = localStorage.getItem(HISTORY_KEY);
-
+    let saved=localStorage.getItem(HISTORY_KEY);
     if(!saved){
-      saved = localStorage.getItem(OLD_HISTORY_KEY);
-
-      if(saved){
-        localStorage.setItem(HISTORY_KEY,saved);
-      }
+      saved=localStorage.getItem(OLD_HISTORY_KEY);
+      if(saved)localStorage.setItem(HISTORY_KEY,saved);
     }
-
-    const data = JSON.parse(saved || "[]");
-
+    const data=JSON.parse(saved||"[]");
     if(Array.isArray(data)){
-      history = data.filter(item =>
-        item &&
-        typeof item.content === "string" &&
-        ["user","assistant"].includes(item.role)
-      ).slice(-50);
+      history=data.filter(item=>item&&typeof item.content==="string"&&["user","assistant"].includes(item.role)).slice(-50);
     }
-  }catch(error){
-    history = [];
-  }
-
-  chat.innerHTML = "";
-
+  }catch(error){history=[];}
+  chat.innerHTML="";
   if(history.length){
-    history.forEach(item =>
-      displayMessage(item.content,item.role)
-    );
+    history.forEach(item=>displayMessage(item.content,item.role));
   }else{
-    displayMessage(
-      "Hello! I'm Marcus V10. Your personal AI assistant is ready. How can I help?",
-      "assistant"
-    );
+    displayMessage("Hello! I'm Marcus V10. Your personal AI assistant is ready. How can I help?", "assistant");
   }
 }
 
-/* SERVER REQUEST */
 async function request(action,data={}){
-  const controller = new AbortController();
-
-  const timeout = setTimeout(
-    ()=>controller.abort(),90000
-  );
-
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),90000);
   try{
-    const response = await fetch(WORKER_URL,{
+    const response=await fetch(WORKER_URL,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        action,
-        userId,
-        ...data
-      }),
+      body:JSON.stringify({action,userId,...data}),
       signal:controller.signal
     });
-
     let result;
-
-    try{
-      result = await response.json();
-    }catch(error){
-      throw new Error("Invalid server response.");
-    }
-
-    if(!response.ok){
-      throw new Error(result.error || "Server error");
-    }
-
+    try{result=await response.json();}
+    catch(error){throw new Error("Invalid server response.");}
+    if(!response.ok)throw new Error(result.error||"Server error");
     return result;
-
   }catch(error){
-    if(error.name === "AbortError"){
-      throw new Error("Marcus took too long to respond.");
-    }
-
+    if(error.name==="AbortError")throw new Error("Marcus took too long to respond.");
     throw error;
-
-  }finally{
-    clearTimeout(timeout);
-  }
+  }finally{clearTimeout(timeout);}
 }
-
-/* IMAGE READER */
 function readImage(file){
   return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-
-    reader.onload = ()=>resolve(reader.result);
-
-    reader.onerror = ()=>reject(
-      new Error("Could not read image.")
-    );
-
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(new Error("Could not read image."));
     reader.readAsDataURL(file);
   });
 }
 
-/* SEND MESSAGE */
 async function sendMessage(textOverride=null){
-  const message = (
-    textOverride !== null ? textOverride : input.value
-  ).trim();
-
-  if(waiting || (!message && !selectedImage)) return;
-
-  input.value = "";
-
-  const imageData = selectedImage;
-
-  const finalMessage = message ||
-    "Please analyse this image.";
-
-  addMessage(
-    imageData
-      ? "Image attached\n" + finalMessage
-      : finalMessage,
-    "user"
-  );
-
+  const message=(textOverride!==null?textOverride:input.value).trim();
+  if(waiting||(!message&&!selectedImage))return;
+  input.value="";
+  const imageData=selectedImage;
+  const finalMessage=message||"Please analyse this image.";
+  addMessage(imageData?"Image attached\n"+finalMessage:finalMessage,"user");
   saveHistory();
 
-  waiting = true;
-  $("send").disabled = true;
-  $("typing").textContent = "Marcus is thinking...";
-
+  waiting=true;
+  $("send").disabled=true;
+  $("typing").textContent="Marcus is thinking...";
+  setStatus("Thinking...",true);
   try{
-    const previousHistory =
-      history.slice(0,-1).slice(-12);
-
-    const data = {
-      message:finalMessage,
-      history:previousHistory
-    };
-
-    if(imageData){
-      data.imageData = imageData;
-    }
-
-    const result = await request("chat",data);
-
-    const reply =
-      result.reply ||
-      result.response ||
-      "I couldn't generate a response.";
-
-    lastReply = reply;
-
+    const previousHistory=history.slice(0,-1).slice(-12);
+    const data={message:finalMessage,history:previousHistory};
+    if(imageData)data.imageData=imageData;
+    const result=await request("chat",data);
+    const reply=result.reply||result.response||"I couldn't generate a response.";
     addMessage(reply,"assistant");
     saveHistory();
+    setStatus("Marcus is online");
+    if(imageData)removeSelectedImage();
 
-    statusText.textContent = "Marcus V10 is online";
-
-    if(imageData){
-      removeSelectedImage();
-    }
-
-    if(voiceMode !== "off"){
-      speakText(reply);
-    }
-
+    /* Automatic speech is attempted when enabled. Some Android browsers
+       require a user tap after an asynchronous network response. Each reply
+       therefore also has its own Speak control as a reliable fallback. */
+    if(autoSpeak)speakText(reply);
   }catch(error){
-    addMessage(
-      "Connection error: " + error.message,
-      "assistant"
-    );
-
+    addMessage("Connection error: "+error.message,"assistant");
     saveHistory();
-    statusText.textContent = "Connection problem";
-
+    setStatus("Connection problem",true);
   }finally{
-    waiting = false;
-    $("send").disabled = false;
-    $("typing").textContent = "";
-
-    if(voiceMode !== "off" && !speaking){
-      scheduleRecognition();
-    }
+    waiting=false;
+    $("send").disabled=false;
+    $("typing").textContent="";
+    if(voiceMode!=="off"&&!speaking)scheduleRecognition();
   }
 }
 
-/* CHAT CONTROLS */
-$("send").onclick = ()=>sendMessage();
-
-input.addEventListener("keydown",event=>{
-  if(event.key === "Enter"){
-    sendMessage();
-  }
-});
-
-$("clear").onclick = ()=>{
-  if(waiting) return;
-
-  history = [];
-  lastReply = "";
-
+$("send").onclick=()=>sendMessage();
+input.addEventListener("keydown",event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();sendMessage();}});
+$("clear").onclick=()=>{
+  if(waiting)return;
+  history=[];lastReply="";
   localStorage.removeItem(HISTORY_KEY);
   localStorage.removeItem(OLD_HISTORY_KEY);
-
-  chat.innerHTML = "";
-
+  chat.innerHTML="";
   displayMessage("Chat cleared. I'm ready.","assistant");
-
   saveHistory();
 };
 
-/* MEMORY */
-$("memory").onclick = async ()=>{
-  if(waiting) return;
-
-  statusText.textContent = "Loading memory...";
-
+/* Memory action name and payload remain unchanged for the existing Worker. */
+$("memory").onclick=async()=>{
+  if(waiting)return;
+  setStatus("Loading memory...",true);
   try{
-    const result = await request("get_memory");
-
-    const memory =
-      typeof result.memory === "undefined"
-        ? result
-        : result.memory;
-
-    addMessage(
-      "YOUR SAVED MEMORY:\n\n" +
-      JSON.stringify(memory,null,2),
-      "assistant"
-    );
-
+    const result=await request("get_memory");
+    const memory=typeof result.memory==="undefined"?result:result.memory;
+    addMessage("YOUR SAVED MEMORY:\n\n"+JSON.stringify(memory,null,2),"assistant");
     saveHistory();
-
-    statusText.textContent = "Memory loaded";
-
+    setStatus("Memory loaded");
   }catch(error){
-    addMessage(
-      "Memory error: " + error.message,
-      "assistant"
-    );
-
+    addMessage("Memory error: "+error.message,"assistant");
     saveHistory();
-    statusText.textContent = "Memory unavailable";
+    setStatus("Memory unavailable",true);
   }
 };
 
-/* STOP OLD RECOGNITION SESSION */
 function stopRecognitionSession(){
-  const old = recognition;
-
-  recognition = null;
-
+  const old=recognition;
+  recognition=null;
   if(old){
-    old.onstart = null;
-    old.onresult = null;
-    old.onerror = null;
-    old.onend = null;
-
-    try{
-      old.stop();
-    }catch(error){}
+    old.onstart=old.onresult=old.onerror=old.onend=null;
+    try{old.stop();}catch(error){}
   }
 }
-
-/* SPEECH OUTPUT */
 function speakText(text){
   if(!("speechSynthesis" in window)){
-    statusText.textContent = "Speech output is unavailable.";
+    setStatus("Speech output is unavailable",true);
     return;
   }
-
+  if(!text)return;
   clearTimeout(voiceRestartTimer);
-
   stopRecognitionSession();
-
-  const currentToken = ++speechToken;
-
+  const token=++speechToken;
   speechSynthesis.cancel();
-
-  speaking = true;
-
-  const speech = new SpeechSynthesisUtterance(text);
-
-  speech.lang = "en-ZA";
-  speech.rate = 1;
-  speech.pitch = 1;
-
-  speech.onend = ()=>{
-    if(currentToken !== speechToken) return;
-
-    speaking = false;
-
-    if(voiceMode !== "off"){
-      scheduleRecognition();
-    }
+  speaking=true;
+  setStatus("Marcus is speaking...",true);
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang="en-ZA";
+  utterance.rate=1;
+  utterance.pitch=1;
+  utterance.onend=()=>{
+    if(token!==speechToken)return;
+    speaking=false;
+    setStatus("Marcus is online");
+    if(voiceMode!=="off")scheduleRecognition();
   };
-
-  speech.onerror = ()=>{
-    if(currentToken !== speechToken) return;
-
-    speaking = false;
-
-    if(voiceMode !== "off"){
-      scheduleRecognition();
-    }
+  utterance.onerror=()=>{
+    if(token!==speechToken)return;
+    speaking=false;
+    setStatus("Tap Speak to hear this reply",true);
+    if(voiceMode!=="off")scheduleRecognition();
   };
-
-  speechSynthesis.speak(speech);
+  speechSynthesis.speak(utterance);
 }
-
-$("speak").onclick = ()=>{
-  if(lastReply){
-    speakText(lastReply);
-  }
-};
-
-$("stopSpeak").onclick = ()=>{
+$("speak").onclick=()=>{if(lastReply)speakText(lastReply);};
+$("stopSpeak").onclick=()=>{
   ++speechToken;
-
-  if("speechSynthesis" in window){
-    speechSynthesis.cancel();
-  }
-
-  speaking = false;
-
-  if(voiceMode !== "off"){
-    scheduleRecognition();
-  }
+  if("speechSynthesis"in window)speechSynthesis.cancel();
+  speaking=false;
+  setStatus("Speech stopped");
+  if(voiceMode!=="off")scheduleRecognition();
+};
+function updateAutoSpeakButton(){
+  $("autoSpeak").textContent=autoSpeak?"🔊 Auto-speak: ON":"🔇 Auto-speak: OFF";
+  $("autoSpeak").classList.toggle("off",!autoSpeak);
+}
+$("autoSpeak").onclick=()=>{
+  autoSpeak=!autoSpeak;
+  localStorage.setItem("marcus_auto_speak",String(autoSpeak));
+  updateAutoSpeakButton();
 };
 
-/* SPEECH RECOGNITION */
 function getRecognition(){
-  const Recognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if(!Recognition) return null;
-
-  const r = new Recognition();
-
-  r.lang = "en-ZA";
-  r.continuous = true;
-  r.interimResults = false;
-  r.maxAlternatives = 1;
-
+  const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!Recognition)return null;
+  const r=new Recognition();
+  r.lang="en-ZA";r.continuous=true;r.interimResults=false;r.maxAlternatives=1;
   return r;
 }
-
-/* RESTART LISTENING */
 function scheduleRecognition(){
   clearTimeout(voiceRestartTimer);
-
-  if(
-    voiceMode === "off" ||
-    waiting ||
-    speaking ||
-    recognition
-  ) return;
-
-  voiceRestartTimer = setTimeout(()=>{
-    startRecognition();
-  },1000);
+  if(voiceMode==="off"||waiting||speaking||recognition)return;
+  voiceRestartTimer=setTimeout(startRecognition,850);
 }
-
-/* START ONE RECOGNITION SESSION */
 function startRecognition(){
-  if(
-    voiceMode === "off" ||
-    waiting ||
-    speaking ||
-    recognition
-  ) return;
-
-  const r = getRecognition();
-
+  if(voiceMode==="off"||waiting||speaking||recognition)return;
+  const r=getRecognition();
   if(!r){
     stopVoice();
-
-    statusText.textContent =
-      "Speech recognition is not supported.";
-
+    setStatus("Speech recognition is not supported",true);
     return;
   }
-
-  recognition = r;
-
-  r.onstart = ()=>{
-    statusText.textContent =
-      voiceMode === "live"
-        ? "Live voice: listening..."
-        : "Listening for Marcus...";
-  };
-
-  r.onresult = event=>{
+  recognition=r;
+  r.onstart=()=>setStatus(voiceMode==="live"?"Live voice · Listening":"Waiting for “Marcus”",true);
+  r.onresult=event=>{
     for(let i=event.resultIndex;i<event.results.length;i++){
-      if(!event.results[i].isFinal) continue;
-
-      const transcript =
-        event.results[i][0].transcript.trim();
-
-      if(!transcript) continue;
-
-      if(
-        voiceMode === "wake" &&
-        !/\bmarcus\b/i.test(transcript)
-      ){
-        continue;
-      }
-
+      if(!event.results[i].isFinal)continue;
+      const transcript=event.results[i][0].transcript.trim();
+      if(!transcript)continue;
+      if(voiceMode==="wake"&&!/\bmarcus\b/i.test(transcript))continue;
       stopRecognitionSession();
-
       handleVoiceTranscript(transcript);
-
       return;
     }
   };
-
-  r.onerror = event=>{
-    if(
-      event.error === "not-allowed" ||
-      event.error === "service-not-allowed"
-    ){
+  r.onerror=event=>{
+    if(event.error==="not-allowed"||event.error==="service-not-allowed"){
       stopVoice();
-
-      statusText.textContent =
-        "Microphone permission is required.";
-
+      setStatus("Microphone permission is required",true);
     }else{
-      statusText.textContent =
-        "Voice interrupted. Reconnecting...";
+      setStatus("Voice interrupted · reconnecting",true);
     }
   };
-
-  r.onend = ()=>{
-    if(recognition === r){
-      recognition = null;
-    }
-
-    if(
-      voiceMode !== "off" &&
-      !waiting &&
-      !speaking
-    ){
-      scheduleRecognition();
-    }
+  r.onend=()=>{
+    if(recognition===r)recognition=null;
+    if(voiceMode!=="off"&&!waiting&&!speaking)scheduleRecognition();
   };
-
-  try{
-    r.start();
-
-  }catch(error){
-    if(recognition === r){
-      recognition = null;
-    }
-
-    scheduleRecognition();
-  }
+  try{r.start();}
+  catch(error){if(recognition===r)recognition=null;scheduleRecognition();}
 }
-
-/* HANDLE SPOKEN WORDS */
 function handleVoiceTranscript(transcript){
-  if(voiceMode === "off" || waiting) return;
-
-  if(voiceMode === "wake"){
-    if(!/\bmarcus\b/i.test(transcript)) return;
-
-    const command = transcript
-      .replace(/\bmarcus\b/i,"")
-      .trim();
-
-    voiceMode = "live";
-
-    if(command){
-      sendMessage(command);
-    }else{
-      speakText("I'm listening. Go ahead.");
-    }
-
+  if(voiceMode==="off"||waiting)return;
+  if(voiceMode==="wake"){
+    if(!/\bmarcus\b/i.test(transcript))return;
+    const command=transcript.replace(/\bmarcus\b/i,"").trim();
+    voiceMode="live";
+    if(command)sendMessage(command);
+    else speakText("I'm listening. Go ahead.");
     return;
   }
-
-  if(voiceMode === "live"){
-    sendMessage(transcript);
-  }
+  if(voiceMode==="live")sendMessage(transcript);
 }
-
-/* START LIVE VOICE */
 function startVoice(mode){
   stopVoice();
-
   if(!getRecognition()){
-    statusText.textContent =
-      "Voice recognition is not supported in this browser.";
-
+    setStatus("Voice recognition is not supported in this browser",true);
     return;
   }
-
-  voiceMode = mode;
-
-  statusText.textContent =
-    mode === "live"
-      ? "Starting live conversation..."
-      : "Waiting for the name Marcus...";
-
+  voiceMode=mode;
+  setStatus(mode==="live"?"Starting live conversation...":"Waiting for the name Marcus...",true);
   startRecognition();
 }
-
-$("voice").onclick = ()=>{
-  startVoice("live");
-};
-
-$("wake").onclick = ()=>{
-  startVoice("wake");
-};
-
-/* STOP VOICE */
+$("voice").onclick=()=>startVoice("live");
+$("wake").onclick=()=>startVoice("wake");
 function stopVoice(){
-  voiceMode = "off";
-
+  voiceMode="off";
   clearTimeout(voiceRestartTimer);
-
   stopRecognitionSession();
-
   ++speechToken;
-
-  if("speechSynthesis" in window){
-    speechSynthesis.cancel();
-  }
-
-  speaking = false;
-
-  statusText.textContent =
-    "Voice stopped · Marcus is online";
+  if("speechSynthesis"in window)speechSynthesis.cancel();
+  speaking=false;
+  setStatus("Voice stopped · Marcus is online");
 }
+$("stopVoice").onclick=stopVoice;
 
-$("stopVoice").onclick = stopVoice;
-
-/* IMAGE PICKER */
-$("image").onclick = ()=>{
-  $("imageInput").click();
-};
-
-$("imageInput").onchange = async event=>{
-  const file = event.target.files[0];
-
-  if(!file) return;
-
-  if(![
-    "image/jpeg",
-    "image/png",
-    "image/webp"
-  ].includes(file.type)){
-    alert("Choose a JPG, PNG or WebP image.");
-    return;
+$("image").onclick=()=>$("imageInput").click();
+$("imageInput").onchange=async event=>{
+  const file=event.target.files[0];
+  if(!file)return;
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+    alert("Choose a JPG, PNG or WebP image.");return;
   }
-
-  if(file.size > 5*1024*1024){
-    alert("Image must be smaller than 5 MB.");
-    return;
-  }
-
+  if(file.size>5*1024*1024){alert("Image must be smaller than 5 MB.");return;}
   try{
-    selectedImage = await readImage(file);
-
-    $("attachment").style.display = "block";
-
-    $("attachmentName").textContent =
-      "Attached: " + file.name;
-
-    statusText.textContent = "Image ready";
-
-  }catch(error){
-    alert(error.message);
-  }
+    selectedImage=await readImage(file);
+    $("attachment").style.display="block";
+    $("attachmentName").textContent="Attached: "+file.name;
+    setStatus("Image ready");
+  }catch(error){alert(error.message);}
 };
-
 function removeSelectedImage(){
-  selectedImage = null;
-
-  $("imageInput").value = "";
-
-  $("attachment").style.display = "none";
+  selectedImage=null;
+  $("imageInput").value="";
+  $("attachment").style.display="none";
 }
+$("removeImage").onclick=removeSelectedImage;
 
-$("removeImage").onclick = removeSelectedImage;
-
-/* PWA INSTALLATION */
-const installButton = $("install");
-
+const installButton=$("install");
 window.addEventListener("beforeinstallprompt",event=>{
-  event.preventDefault();
-
-  installPrompt = event;
-
-  installButton.hidden = false;
+  event.preventDefault();installPrompt=event;installButton.hidden=false;
 });
-
-installButton.onclick = async ()=>{
+installButton.onclick=async()=>{
   if(!installPrompt){
-    alert(
-      "No installation prompt is available. Marcus remains available in your browser."
-    );
-
+    alert("No installation prompt is available. Marcus remains available in your browser.");
     return;
   }
-
   installPrompt.prompt();
-
   await installPrompt.userChoice;
-
-  installPrompt = null;
-};
-
-window.addEventListener("appinstalled",()=>{
-  statusText.textContent =
-    "Marcus installed successfully";
-
-  installButton.hidden = true;
-});
-
-/* SERVER CONNECTION */
-async function connect(){
-  try{
-    const response = await fetch(WORKER_URL);
-
-    statusText.textContent = response.ok
-      ? "Marcus V10 is online"
-      : "Worker needs attention";
-
-  }catch(error){
-    statusText.textContent =
-      "Cannot connect to server";
-  }
-}
-
-/* INITIALIZE MARCUS */
-function initializeMarcus(){
-  try{
-    showSavedChat();
-
-    connect();
-
-    if("serviceWorker" in navigator){
-      window.addEventListener("load",()=>{
-        navigator.serviceWorker
-          .register("./service-worker.js")
-          .catch(error=>console.log(error));
-      });
-    }
-
-  }catch(error){
-    console.error("Marcus startup error:",error);
-
-    statusText.textContent =
-      "Marcus startup error: " + error.message;
-  }
-}
-
-initializeMarcus();
-
-</script>
-</body>
-      </html>
+  installPrompt
