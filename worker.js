@@ -365,7 +365,8 @@ Use this visual analysis to answer the user's question.`;
         {
           messages,
           chat_template_kwargs: {
-            enable_thinking: false
+  enable_thinking: true
+          }
           }
         }
       );
