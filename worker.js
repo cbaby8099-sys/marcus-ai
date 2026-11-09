@@ -17,11 +17,17 @@ export default {
       });
 
     if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: cors });
+      return new Response(null, {
+        status: 204,
+        headers: cors
+      });
     }
 
     if (request.method === "GET") {
-      return new Response("Marcus V9 is online.", { headers: cors });
+      return json({
+        success: true,
+        message: "Marcus V10 is online."
+      });
     }
 
     if (request.method !== "POST") {
@@ -34,23 +40,29 @@ export default {
       }
 
       if (!env.MARCUS_MEMORY) {
-        return json({ error: "MARCUS_MEMORY binding is missing." }, 500);
+        return json({
+          error: "MARCUS_MEMORY binding is missing."
+        }, 500);
       }
 
       const body = await request.json();
       const userId = body.userId;
+      const action = body.action || "chat";
 
       if (
         typeof userId !== "string" ||
         !/^[a-zA-Z0-9_-]{16,80}$/.test(userId)
       ) {
-        return json({ error: "Invalid user ID. Refresh Marcus." }, 400);
+        return json({
+          error: "Invalid user ID. Refresh Marcus."
+        }, 400);
       }
 
       const memoryKey = `user:${userId}`;
 
       async function readMemory() {
         const saved = await env.MARCUS_MEMORY.get(memoryKey);
+
         if (!saved) return {};
 
         try {
@@ -58,15 +70,19 @@ export default {
 
           if (Array.isArray(parsed)) {
             const converted = {};
+
             parsed.forEach((item, index) => {
               if (typeof item === "string") {
                 converted[`memory_${index + 1}`] = item;
               }
             });
+
             return converted;
           }
 
-          return parsed && typeof parsed === "object" ? parsed : {};
+          return parsed && typeof parsed === "object"
+            ? parsed
+            : {};
         } catch {
           return {};
         }
@@ -82,22 +98,30 @@ export default {
       let memory = await readMemory();
 
       // MEMORY API
-      if (body.action === "get_memory") {
-        return json({ success: true, memory });
+
+      if (action === "get_memory") {
+        return json({
+          success: true,
+          memory
+        });
       }
 
-      if (body.action === "save_memory") {
+      if (action === "save_memory") {
         if (
           !body.memory ||
           typeof body.memory !== "object" ||
           Array.isArray(body.memory)
         ) {
-          return json({ error: "Invalid memory format." }, 400);
+          return json({
+            error: "Invalid memory format."
+          }, 400);
         }
 
         const cleaned = {};
 
-        for (const [key, value] of Object.entries(body.memory).slice(-50)) {
+        for (
+          const [key, value] of Object.entries(body.memory).slice(-50)
+        ) {
           if (
             typeof key === "string" &&
             typeof value === "string" &&
@@ -111,29 +135,49 @@ export default {
         memory = cleaned;
         await writeMemory(memory);
 
-        return json({ success: true, memory });
+        return json({
+          success: true,
+          memory
+        });
       }
 
-      if (body.action === "delete_memory") {
+      if (action === "delete_memory") {
         await env.MARCUS_MEMORY.delete(memoryKey);
-        return json({ success: true, memory: {} });
+
+        return json({
+          success: true,
+          memory: {}
+        });
       }
 
       // CHAT INPUT
-      const message = body.message;
 
-      if (typeof message !== "string" || !message.trim()) {
-        return json({ error: "Please enter a message." }, 400);
+      if (action !== "chat") {
+        return json({
+          error: "Unknown action."
+        }, 400);
+      }
+
+      const message =
+        typeof body.message === "string"
+          ? body.message.trim()
+          : "";
+
+      if (!message && !body.imageData) {
+        return json({
+          error: "Please enter a message or upload an image."
+        }, 400);
       }
 
       if (message.length > 10000) {
-        return json({ error: "Message is too long." }, 413);
+        return json({
+          error: "Message is too long."
+        }, 413);
       }
 
-      const cleanMessage = message.trim();
-
       // EXPLICIT MEMORY COMMANDS
-      const rememberMatch = cleanMessage.match(
+
+      const rememberMatch = message.match(
         /^remember(?: that)?\s+(.+)$/i
       );
 
@@ -154,7 +198,9 @@ export default {
         );
 
         if (!exists) {
-          const nextNumber = Object.keys(memory).length + 1;
+          const nextNumber =
+            Object.keys(memory).length + 1;
+
           memory[`memory_${nextNumber}`] = fact;
 
           memory = Object.fromEntries(
@@ -170,7 +216,7 @@ export default {
         });
       }
 
-      if (/^forget everything$/i.test(cleanMessage)) {
+      if (/^forget everything$/i.test(message)) {
         await env.MARCUS_MEMORY.delete(memoryKey);
 
         return json({
@@ -179,7 +225,7 @@ export default {
         });
       }
 
-      const forgetMatch = cleanMessage.match(
+      const forgetMatch = message.match(
         /^forget(?: that)?\s+(.+)$/i
       );
 
@@ -190,7 +236,8 @@ export default {
         for (const [key, value] of Object.entries(memory)) {
           if (
             typeof value === "string" &&
-            !value.toLowerCase().includes(target)
+            !value.toLowerCase().includes(target) &&
+            !key.toLowerCase().includes(target)
           ) {
             updated[key] = value;
           }
@@ -205,22 +252,22 @@ export default {
         });
       }
 
-      // IMAGE INPUT
+      // IMAGE ANALYSIS
+
       let imageDescription = "";
 
       if (body.imageData) {
-        if (typeof body.imageData !== "string") {
-          return json({ error: "Invalid image data." }, 400);
-        }
-
-        if (body.imageData.length > 5_000_000) {
+        if (
+          typeof body.imageData !== "string" ||
+          body.imageData.length > 5000000
+        ) {
           return json({
-            error: "Image is too large. Please choose a smaller image."
+            error: "Image is too large or invalid."
           }, 413);
         }
 
         const imageMatch = body.imageData.match(
-          /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+=*)$/
+          /^data:image\/(jpeg|jpg|png|webp);base64,([A-Za-z0-9+/]+=*)$/i
         );
 
         if (!imageMatch) {
@@ -235,7 +282,7 @@ export default {
             task: "query",
             image: body.imageData,
             question:
-              cleanMessage ||
+              message ||
               "Describe this image accurately. Mention visible details and uncertainty.",
             reasoning: false,
             max_tokens: 1024
@@ -245,6 +292,7 @@ export default {
         imageDescription =
           visionResult?.answer ||
           visionResult?.description ||
+          visionResult?.response ||
           "";
 
         if (
@@ -252,17 +300,19 @@ export default {
           !imageDescription.trim()
         ) {
           return json({
-            error: "Marcus could not understand that image. Try another."
+            error: "Marcus could not understand that image."
           }, 502);
         }
       }
 
       // MEMORY CONTEXT
+
       const memoryText = Object.entries(memory)
         .map(([key, value]) => `${key}: ${value}`)
         .join("\n") || "No saved memories.";
 
       // CONVERSATION HISTORY
+
       const history = Array.isArray(body.history)
         ? body.history.slice(-10)
         : [];
@@ -271,7 +321,7 @@ export default {
         {
           role: "system",
           content: `
-You are Marcus V9, an intelligent personal AI assistant.
+You are Marcus V10, an intelligent personal AI assistant.
 
 IDENTITY:
 - Your name is Marcus.
@@ -303,11 +353,10 @@ Do not invent memories.
 Do not claim to remember information that is not provided.
 
 VISION:
-- You can receive image descriptions generated by your vision system.
+- You can receive image descriptions from your vision system.
 - Use those descriptions to answer questions about uploaded pictures.
 - Distinguish visible facts from guesses.
 - If something is unclear, say so.
-- Never claim you can see details that were not detected.
 
 LEARNING:
 - Use conversation history to maintain context.
@@ -343,7 +392,7 @@ SAFETY:
         }
       }
 
-      let finalMessage = cleanMessage;
+      let finalMessage = message;
 
       if (imageDescription) {
         finalMessage += `
@@ -360,16 +409,18 @@ Use this visual analysis to answer the user's question.`;
       });
 
       // MAIN CONVERSATION MODEL
+
       const result = await env.AI.run(
         "@cf/google/gemma-4-26b-a4b-it",
         {
           messages,
           chat_template_kwargs: {
-  enable_thinking: true
-          }
+            enable_thinking: true
           }
         }
       );
+
+      // READ AI RESPONSE
 
       let reply = "";
 
@@ -399,11 +450,10 @@ Use this visual analysis to answer the user's question.`;
 
     } catch (error) {
       return json({
+        success: false,
         error: error.message || "Marcus encountered an error."
       }, 500);
     }
   }
 };
         
-                                    
- 
