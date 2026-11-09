@@ -7,135 +7,61 @@
 <meta name="theme-color" content="#080b12">
 <meta name="description" content="Marcus AI Personal Assistant">
 <link rel="manifest" href="./manifest.json">
-<title>Marcus AI V9</title>
+<title>Marcus AI V10</title>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+  margin:0;background:#080b12;color:#eaf0ff;
+  font-family:Arial,sans-serif
 }
-
-body {
-  margin: 0;
-  background: #080b12;
-  color: #eaf0ff;
-  font-family: Arial, sans-serif;
+header{
+  padding:20px;text-align:center;background:#101827;
+  border-bottom:1px solid #263247
 }
-
-header {
-  padding: 20px;
-  text-align: center;
-  background: #101827;
-  border-bottom: 1px solid #263247;
+h1{margin:0;color:#75a7ff;font-size:28px;letter-spacing:1px}
+#status{color:#91a5c8;font-size:12px;margin-top:8px}
+main{max-width:760px;margin:auto;padding:14px}
+#chat{
+  height:55vh;min-height:280px;overflow-y:auto;
+  padding:10px;scroll-behavior:smooth
 }
-
-h1 {
-  margin: 0;
-  color: #75a7ff;
-  font-size: 28px;
+.msg{
+  padding:13px;margin:10px 0;border-radius:14px;
+  line-height:1.6;white-space:pre-wrap;
+  overflow-wrap:anywhere;max-width:90%
 }
-
-#status {
-  color: #91a5c8;
-  font-size: 12px;
-  margin-top: 8px;
+.user{background:#18345d;margin-left:auto}
+.marcus{background:#151e30;margin-right:auto}
+#typing{color:#91a5c8;font-size:13px;padding:7px;min-height:25px}
+#controls{display:flex;gap:8px}
+#message{
+  min-width:0;flex:1;background:#111b2c;color:white;
+  border:1px solid #34435f;border-radius:12px;
+  padding:14px;font-size:16px
 }
-
-main {
-  max-width: 720px;
-  margin: auto;
-  padding: 14px;
+#message:focus{outline:1px solid #75a7ff}
+button{
+  background:#2459a8;color:white;border:0;
+  border-radius:10px;padding:12px;margin:3px;
+  font-size:13px;cursor:pointer
 }
-
-#chat {
-  height: 58vh;
-  min-height: 280px;
-  overflow-y: auto;
-  padding: 10px;
-  scroll-behavior: smooth;
+button:disabled{opacity:.5;cursor:not-allowed}
+.tools{margin-top:12px;display:flex;flex-wrap:wrap;gap:5px}
+#voice{background:#176b63}
+#wake{background:#624a9c}
+#stopVoice{background:#853d4b}
+#imageInput{display:none}
+#attachment{
+  display:none;margin-top:9px;padding:10px;
+  background:#151e30;border-radius:10px;
+  font-size:13px;color:#b9d0ff
 }
-
-.msg {
-  padding: 13px;
-  margin: 10px 0;
-  border-radius: 14px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  max-width: 90%;
-}
-
-.user {
-  background: #18345d;
-  margin-left: auto;
-}
-
-.marcus {
-  background: #151e30;
-  margin-right: auto;
-}
-
-#typing {
-  color: #91a5c8;
-  font-size: 13px;
-  padding: 7px;
-  min-height: 25px;
-}
-
-#controls {
-  display: flex;
-  gap: 8px;
-}
-
-input {
-  min-width: 0;
-  flex: 1;
-  background: #111b2c;
-  color: white;
-  border: 1px solid #34435f;
-  border-radius: 12px;
-  padding: 14px;
-  font-size: 16px;
-}
-
-input:focus {
-  outline: 1px solid #75a7ff;
-}
-
-button {
-  background: #2459a8;
-  color: white;
-  border: 0;
-  border-radius: 10px;
-  padding: 12px;
-  margin: 3px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: .5;
-}
-
-.tools {
-  margin-top: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-#send {
-  min-width: 65px;
-}
-
-@media(max-width:400px) {
-  main {
-    padding: 9px;
-  }
-
-  button {
-    padding: 10px;
-    font-size: 12px;
-  }
+#attachment button{background:#713c4c;padding:6px}
+.small{color:#91a5c8;font-size:11px;text-align:center;margin-top:15px}
+@media(max-width:400px){
+  main{padding:9px}
+  button{padding:10px;font-size:12px}
 }
 </style>
 </head>
@@ -143,42 +69,49 @@ button:disabled {
 <body>
 
 <header>
-  <h1>Marcus AI</h1>
-  <div id="status">Starting Marcus...</div>
+  <h1>MARCUS AI</h1>
+  <div id="status">Starting Marcus V10...</div>
 </header>
 
 <main>
 
-  <div id="chat">
-    <div class="msg marcus">
-      Hello! I'm Marcus V9. I'm ready to help you.
-    </div>
-  </div>
-
+  <div id="chat"></div>
   <div id="typing"></div>
 
   <div id="controls">
-    <input
-      id="message"
-      placeholder="Talk to Marcus..."
-      autocomplete="off"
-    >
+    <input id="message" placeholder="Talk to Marcus..." autocomplete="off">
     <button id="send">Send</button>
   </div>
 
-  <div class="tools">
-    <button id="voice">🎙 Voice</button>
-    <button id="speak">🔊 Speak</button>
-    <button id="memory">🧠 Memory</button>
-    <button id="install" hidden>📱 Install Marcus</button>
-    <button id="clear">Clear chat</button>
+  <div id="attachment">
+    <span id="attachmentName">Image attached</span>
+    <button id="removeImage">Remove</button>
   </div>
+
+  <input type="file" id="imageInput"
+    accept="image/png,image/jpeg,image/webp">
+
+  <div class="tools">
+    <button id="voice">📞 Live Voice</button>
+    <button id="wake">👂 Wake Marcus</button>
+    <button id="stopVoice">⏹ Stop Voice</button>
+    <button id="speak">🔊 Speak</button>
+    <button id="stopSpeak">Stop Speaking</button>
+    <button id="image">🖼 Image</button>
+    <button id="memory">🧠 Memory</button>
+    <button id="install" hidden>📱 Install</button>
+    <button id="clear">Clear Chat</button>
+  </div>
+
+  <div class="small">Marcus AI V10 · Personal AI Assistant</div>
 
 </main>
 
 <script>
+"use strict";
 
-const WORKER_URL = "https://marcus-ai.cbaby8099.workers.dev";
+const WORKER_URL =
+  "https://marcus-ai.cbaby8099.workers.dev";
 
 const $ = id => document.getElementById(id);
 
@@ -186,129 +119,198 @@ const chat = $("chat");
 const input = $("message");
 const statusText = $("status");
 
+const HISTORY_KEY = "marcus_v10_history";
+const OLD_HISTORY_KEY = "marcus_v9_history";
+
 let history = [];
 let lastReply = "";
 let waiting = false;
 let installPrompt = null;
+let selectedImage = null;
 
-// USER ID
+// Preserve existing user identity
 let userId = localStorage.getItem("marcus_user_id");
 
-if (!userId) {
-  userId = "marcus-" + Math.random().toString(36).slice(2);
-  localStorage.setItem("marcus_user_id", userId);
+if(!userId){
+  userId = "marcus-" +
+    (window.crypto && crypto.randomUUID
+      ? crypto.randomUUID().replace(/-/g,"")
+      : Math.random().toString(36).slice(2) +
+        Date.now().toString(36));
+
+  localStorage.setItem("marcus_user_id",userId);
 }
 
-// SAVE HISTORY
-function saveHistory() {
-  try {
-    localStorage.setItem(
-      "marcus_v9_history",
-      JSON.stringify(history.slice(-40))
-    );
-  } catch (error) {
-    console.log("History could not be saved.");
-  }
-}
+// VOICE STATE
+let recognition = null;
+let voiceMode = "off";
+let voiceRestartTimer = null;
+let speaking = false;
+let recognitionAvailable = false;
 
 // DISPLAY MESSAGE
-function displayMessage(text, role) {
+function displayMessage(text,role){
   const div = document.createElement("div");
-
-  div.className =
-    "msg " + (role === "user" ? "user" : "marcus");
-
+  div.className = "msg " +
+    (role === "user" ? "user" : "marcus");
   div.textContent = text;
-
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
 }
 
 // ADD MESSAGE
-function addMessage(text, role) {
+function addMessage(text,role){
   history.push({
-    role,
-    content: text
+    role:role === "user" ? "user" : "assistant",
+    content:text
   });
 
-  displayMessage(text, role);
+  displayMessage(text,role);
+}
+
+// SAVE HISTORY
+function saveHistory(){
+  try{
+    localStorage.setItem(
+      HISTORY_KEY,
+      JSON.stringify(history.slice(-50))
+    );
+  }catch(error){
+    console.log("History save failed",error);
+  }
 }
 
 // LOAD HISTORY
-function showSavedChat() {
-  try {
-    const saved = JSON.parse(
-      localStorage.getItem("marcus_v9_history") || "null"
-    );
+function showSavedChat(){
+  try{
+    let saved = localStorage.getItem(HISTORY_KEY);
 
-    if (Array.isArray(saved)) {
-      history = saved.slice(-40);
-
-      chat.innerHTML = "";
-
-      history.forEach(message => {
-        displayMessage(message.content, message.role);
-      });
+    if(!saved){
+      saved = localStorage.getItem(OLD_HISTORY_KEY);
+      if(saved) localStorage.setItem(HISTORY_KEY,saved);
     }
-  } catch (error) {
+
+    const data = JSON.parse(saved || "[]");
+
+    if(Array.isArray(data)){
+      history = data.filter(item =>
+        item &&
+        typeof item.content === "string" &&
+        ["user","assistant"].includes(item.role)
+      ).slice(-50);
+    }
+  }catch(error){
     history = [];
+  }
+
+  chat.innerHTML = "";
+
+  if(history.length){
+    history.forEach(item =>
+      displayMessage(item.content,item.role)
+    );
+  }else{
+    displayMessage(
+      "Hello! I'm Marcus V10. Your personal AI assistant is ready. How can I help?",
+      "assistant"
+    );
   }
 }
 
 // WORKER REQUEST
-async function request(action, data = {}) {
-  const response = await fetch(WORKER_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      action,
-      userId,
-      ...data
-    })
+async function request(action,data={}){
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    ()=>controller.abort(),90000
+  );
+
+  try{
+    const response = await fetch(WORKER_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        action,
+        userId,
+        ...data
+      }),
+      signal:controller.signal
+    });
+
+    let result;
+
+    try{
+      result = await response.json();
+    }catch(error){
+      throw new Error("Invalid server response.");
+    }
+
+    if(!response.ok){
+      throw new Error(result.error || "Server error");
+    }
+
+    return result;
+
+  }catch(error){
+    if(error.name === "AbortError"){
+      throw new Error("Marcus took too long to respond.");
+    }
+    throw error;
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+
+// READ IMAGE
+function readImage(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = ()=>reject(
+      new Error("Could not read image.")
+    );
+    reader.readAsDataURL(file);
   });
-
-  let result;
-
-  try {
-    result = await response.json();
-  } catch (error) {
-    throw new Error("Invalid response from Marcus server.");
-  }
-
-  if (!response.ok) {
-    throw new Error(result.error || "Server error");
-  }
-
-  return result;
 }
 
 // SEND MESSAGE
-async function sendMessage() {
-  const message = input.value.trim();
+async function sendMessage(textOverride=null){
 
-  if (!message || waiting) return;
+  const message = (
+    textOverride !== null
+      ? textOverride
+      : input.value
+  ).trim();
+
+  if(waiting || (!message && !selectedImage)) return;
 
   input.value = "";
 
-  addMessage(message, "user");
+  const imageData = selectedImage;
+  const finalMessage = message ||
+    "Please analyse this image.";
+
+  addMessage(
+    imageData ? "Image attached\n" + finalMessage : finalMessage,
+    "user"
+  );
+
   saveHistory();
 
   waiting = true;
-
   $("send").disabled = true;
   $("typing").textContent = "Marcus is thinking...";
 
-  try {
-    const previousHistory = history
-      .slice(0, -1)
-      .slice(-12);
+  try{
+    const previousHistory = history.slice(0,-1).slice(-12);
 
-    const result = await request("chat", {
-      message,
-      history: previousHistory
-    });
+    const data = {
+      message:finalMessage,
+      history:previousHistory
+    };
+
+    if(imageData) data.imageData = imageData;
+
+    const result = await request("chat",data);
 
     const reply =
       result.reply ||
@@ -317,183 +319,370 @@ async function sendMessage() {
 
     lastReply = reply;
 
-    addMessage(reply, "assistant");
+    addMessage(reply,"assistant");
     saveHistory();
 
-    statusText.textContent = "Marcus V9 is online";
+    statusText.textContent = "Marcus V10 is online";
 
-  } catch (error) {
-    addMessage(
-      "Connection error: " + error.message,
-      "assistant"
-    );
+    if(imageData) removeSelectedImage();
 
+    // Speak automatically during live voice
+    if(voiceMode !== "off"){
+      speakText(reply);
+    }
+
+  }catch(error){
+    addMessage("Connection error: " + error.message,"assistant");
     saveHistory();
-
     statusText.textContent = "Connection problem";
 
-  } finally {
+  }finally{
     waiting = false;
-
     $("send").disabled = false;
     $("typing").textContent = "";
 
-    input.focus();
+    // Resume listening after the answer
+    if(voiceMode !== "off" && !speaking){
+      scheduleRecognition();
+    }
   }
 }
 
-// BUTTON
-$("send").onclick = sendMessage;
+// SEND CONTROLS
+$("send").onclick = ()=>sendMessage();
 
-// ENTER TO SEND
-input.addEventListener("keydown", event => {
-  if (event.key === "Enter") {
-    sendMessage();
-  }
+input.addEventListener("keydown",event=>{
+  if(event.key === "Enter") sendMessage();
 });
 
 // CLEAR CHAT
-$("clear").onclick = () => {
+$("clear").onclick = ()=>{
+  if(waiting) return;
+
   history = [];
   lastReply = "";
 
-  localStorage.removeItem("marcus_v9_history");
+  localStorage.removeItem(HISTORY_KEY);
+  localStorage.removeItem(OLD_HISTORY_KEY);
 
   chat.innerHTML = "";
-  $("typing").textContent = "";
+  displayMessage("Chat cleared. I'm ready.", "assistant");
+  saveHistory();
 };
 
 // MEMORY
-$("memory").onclick = async () => {
+$("memory").onclick = async ()=>{
+  if(waiting) return;
+
   statusText.textContent = "Loading memory...";
 
-  try {
+  try{
     const result = await request("get_memory");
-
-    const memory =
-      typeof result.memory === "undefined"
-        ? result
-        : result.memory;
+    const memory = typeof result.memory === "undefined"
+      ? result
+      : result.memory;
 
     addMessage(
-      "Marcus Memory:\n" +
-      JSON.stringify(memory, null, 2),
+      "YOUR SAVED MEMORY:\n\n" +
+      JSON.stringify(memory,null,2),
       "assistant"
     );
 
     saveHistory();
-
     statusText.textContent = "Memory loaded";
 
-  } catch (error) {
-    addMessage(
-      "Memory error: " + error.message,
-      "assistant"
-    );
-
+  }catch(error){
+    addMessage("Memory error: " + error.message,"assistant");
     saveHistory();
-
     statusText.textContent = "Memory unavailable";
   }
 };
 
-// SPEAK
-$("speak").onclick = () => {
-  if (!lastReply) return;
-
-  if (!("speechSynthesis" in window)) {
-    statusText.textContent = "Speech not supported";
-    return;
-  }
+// SPEECH OUTPUT
+function speakText(text){
+  if(!("speechSynthesis" in window)) return;
 
   speechSynthesis.cancel();
+  speaking = true;
 
-  const speech = new SpeechSynthesisUtterance(lastReply);
-
+  const speech = new SpeechSynthesisUtterance(text);
   speech.lang = "en-ZA";
   speech.rate = 1;
   speech.pitch = 1;
 
+  speech.onend = ()=>{
+    speaking = false;
+    if(voiceMode !== "off") scheduleRecognition();
+  };
+
+  speech.onerror = ()=>{
+    speaking = false;
+    if(voiceMode !== "off") scheduleRecognition();
+  };
+
   speechSynthesis.speak(speech);
+}
+
+$("speak").onclick = ()=>{
+  if(lastReply) speakText(lastReply);
 };
 
-// VOICE INPUT
-$("voice").onclick = () => {
+$("stopSpeak").onclick = ()=>{
+  if("speechSynthesis" in window){
+    speechSynthesis.cancel();
+  }
+  speaking = false;
+};
+
+// VOICE RECOGNITION
+function getRecognition(){
   const Recognition =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
 
-  if (!Recognition) {
-    addMessage(
-      "Voice input is not supported in this browser.",
-      "assistant"
-    );
-    saveHistory();
+  if(!Recognition) return null;
+
+  const r = new Recognition();
+  r.lang = "en-ZA";
+  r.continuous = true;
+  r.interimResults = false;
+  r.maxAlternatives = 1;
+
+  return r;
+}
+
+function scheduleRecognition(){
+  clearTimeout(voiceRestartTimer);
+
+  if(voiceMode === "off" || waiting || speaking) return;
+
+  voiceRestartTimer = setTimeout(()=>{
+    startRecognition();
+  },700);
+}
+
+function startRecognition(){
+  if(voiceMode === "off" || waiting || speaking) return;
+
+  try{
+    if(recognition){
+      try{recognition.stop();}catch(error){}
+    }
+
+    recognition = getRecognition();
+
+    if(!recognition){
+      stopVoice();
+      statusText.textContent =
+        "Speech recognition is not supported here.";
+      return;
+    }
+
+    recognitionAvailable = true;
+
+    recognition.onstart = ()=>{
+      if(voiceMode === "live"){
+        statusText.textContent = "Live voice: listening...";
+      }else if(voiceMode === "wake"){
+        statusText.textContent = "Listening for Marcus...";
+      }
+    };
+
+    recognition.onresult = event=>{
+      for(let i=event.resultIndex;i<event.results.length;i++){
+        if(!event.results[i].isFinal) continue;
+
+        const transcript =
+          event.results[i][0].transcript.trim();
+
+        if(!transcript) continue;
+
+        handleVoiceTranscript(transcript);
+      }
+    };
+
+    recognition.onerror = event=>{
+      if(event.error === "not-allowed" ||
+         event.error === "service-not-allowed"){
+        stopVoice();
+        statusText.textContent =
+          "Microphone permission is required.";
+      }
+    };
+
+    recognition.onend = ()=>{
+      if(voiceMode !== "off" && !waiting && !speaking){
+        scheduleRecognition();
+      }
+    };
+
+    recognition.start();
+
+  }catch(error){
+    scheduleRecognition();
+  }
+}
+
+// HANDLE SPOKEN WORDS
+function handleVoiceTranscript(transcript){
+
+  if(voiceMode === "off" || waiting) return;
+
+  if(voiceMode === "wake"){
+    const match = transcript.match(/\bmarcus\b/i);
+
+    if(!match) return;
+
+    const command = transcript
+      .replace(/\bmarcus\b/i,"")
+      .trim();
+
+    voiceMode = "live";
+
+    statusText.textContent = "Marcus activated.";
+
+    if(command){
+      sendMessage(command);
+    }else{
+      speakText("I'm listening. Go ahead.");
+    }
+
     return;
   }
 
-  const recognition = new Recognition();
+  if(voiceMode === "live"){
+    sendMessage(transcript);
+  }
+}
 
-  recognition.lang = "en-ZA";
-
-  recognition.onresult = event => {
-    input.value = event.results[0][0].transcript;
-    sendMessage();
-  };
-
-  recognition.onerror = () => {
-    statusText.textContent = "Voice input error";
-  };
-
-  recognition.start();
+// START LIVE VOICE
+$("voice").onclick = ()=>{
+  startVoice("live");
 };
+
+// START WAKE WORD
+$("wake").onclick = ()=>{
+  startVoice("wake");
+};
+
+function startVoice(mode){
+
+  if(!getRecognition()){
+    statusText.textContent =
+      "Voice recognition is not supported in this browser.";
+    return;
+  }
+
+  stopVoice();
+
+  voiceMode = mode;
+
+  statusText.textContent =
+    mode === "live"
+      ? "Starting live conversation..."
+      : "Waiting for the name Marcus...";
+
+  startRecognition();
+}
+
+// STOP VOICE
+function stopVoice(){
+  voiceMode = "off";
+
+  clearTimeout(voiceRestartTimer);
+
+  if(recognition){
+    recognition.onend = null;
+    recognition.onerror = null;
+
+    try{recognition.stop();}catch(error){}
+
+    recognition = null;
+  }
+
+  if("speechSynthesis" in window){
+    speechSynthesis.cancel();
+  }
+
+  speaking = false;
+  statusText.textContent = "Voice stopped · Marcus is online";
+}
+
+$("stopVoice").onclick = stopVoice;
+
+// IMAGE PICKER
+$("image").onclick = ()=>{
+  $("imageInput").click();
+};
+
+$("imageInput").onchange = async event=>{
+  const file = event.target.files[0];
+  if(!file) return;
+
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+    alert("Choose a JPG, PNG or WebP image.");
+    return;
+  }
+
+  if(file.size > 5*1024*1024){
+    alert("Image must be smaller than 5 MB.");
+    return;
+  }
+
+  try{
+    selectedImage = await readImage(file);
+    $("attachment").style.display = "block";
+    $("attachmentName").textContent = "Attached: " + file.name;
+    statusText.textContent = "Image ready";
+  }catch(error){
+    alert(error.message);
+  }
+};
+
+function removeSelectedImage(){
+  selectedImage = null;
+  $("imageInput").value = "";
+  $("attachment").style.display = "none";
+}
+
+$("removeImage").onclick = removeSelectedImage;
 
 // INSTALL
 const installButton = $("install");
-
-// Always show the installation button
 installButton.hidden = false;
 
-window.addEventListener("beforeinstallprompt", event => {
+window.addEventListener("beforeinstallprompt",event=>{
   event.preventDefault();
   installPrompt = event;
   installButton.hidden = false;
 });
 
-installButton.onclick = async () => {
-  if (!installPrompt) {
-    alert(
-      "Chrome has not provided an installation prompt yet. " +
-      "Marcus is still available in your browser."
-    );
+installButton.onclick = async ()=>{
+  if(!installPrompt){
+    alert("No installation prompt is available. Marcus remains available in your browser.");
     return;
   }
 
   installPrompt.prompt();
-
   await installPrompt.userChoice;
-
   installPrompt = null;
 };
 
-window.addEventListener("appinstalled", () => {
+window.addEventListener("appinstalled",()=>{
   statusText.textContent = "Marcus installed successfully";
   installButton.hidden = true;
 });
-  
 
-
-// CONNECTION
-async function connect() {
-  try {
+// SERVER CONNECTION
+async function connect(){
+  try{
     const response = await fetch(WORKER_URL);
 
-    statusText.textContent =
-      response.ok
-        ? "Marcus V9 is online"
-        : "Worker needs attention";
+    statusText.textContent = response.ok
+      ? "Marcus V10 is online"
+      : "Worker needs attention";
 
-  } catch (error) {
+  }catch(error){
     statusText.textContent = "Cannot connect to server";
   }
 }
@@ -502,15 +691,14 @@ async function connect() {
 showSavedChat();
 connect();
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
     navigator.serviceWorker
       .register("./service-worker.js")
-      .catch(() => {});
+      .catch(error=>console.log(error));
   });
 }
-
 </script>
 </body>
-      </html>
-
+  </html>
+  
