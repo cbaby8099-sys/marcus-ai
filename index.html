@@ -10,42 +10,32 @@
 <style>
 :root{
   color-scheme:dark;
-  --bg:#070a12;--panel:#0d1422;--panel2:#111c2e;
-  --line:rgba(111,157,255,.18);--blue:#4b8dff;
-  --cyan:#39d9ff;--text:#edf4ff;--muted:#8294b5;
-  --glow:0 0 28px rgba(57,145,255,.22);
+  --bg:#070a12;--panel:#0d1422;--line:rgba(111,157,255,.18);
+  --blue:#4b8dff;--cyan:#39d9ff;--text:#edf4ff;--muted:#8294b5;
 }
 *{box-sizing:border-box}
 html,body{min-height:100%;margin:0}
 body{
-  background:
-    radial-gradient(ellipse at 50% 0%,rgba(28,83,166,.22),transparent 42%),
-    radial-gradient(ellipse at 100% 75%,rgba(0,191,255,.07),transparent 35%),
-    var(--bg);
-  color:var(--text);font-family:Inter,Arial,sans-serif;
+  background:radial-gradient(ellipse at 50% 0%,rgba(28,83,166,.22),transparent 42%),var(--bg);
+  color:var(--text);font-family:Arial,sans-serif;
 }
 button,input{font:inherit}
 button{
   border:1px solid rgba(103,159,255,.22);border-radius:13px;
-  color:var(--text);background:#14233a;padding:11px 14px;
-  cursor:pointer;transition:transform .15s,border-color .15s,background .15s;
+  color:var(--text);background:#14233a;padding:11px 14px;cursor:pointer;
 }
-button:active{transform:scale(.97)}
 button:disabled{opacity:.45;cursor:not-allowed}
 button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .app{width:min(820px,100%);min-height:100dvh;margin:auto;padding:0 15px 22px;display:flex;flex-direction:column}
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:17px 3px 12px;border-bottom:1px solid var(--line);
-}
+header{display:flex;align-items:center;justify-content:space-between;padding:17px 3px 12px;border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:11px}
 .brand-mark{
   width:40px;height:40px;border-radius:13px;display:grid;place-items:center;
   background:linear-gradient(145deg,#173d78,#07172c);
-  border:1px solid rgba(75,141,255,.55);box-shadow:var(--glow);
-  color:#a9eaff;font-size:20px;font-weight:800;
+  border:1px solid rgba(75,141,255,.55);color:#a9eaff;font-size:20px;font-weight:800;
+  box-shadow:0 0 25px rgba(31,133,255,.25);
 }
-h1{font-size:19px;letter-spacing:2.5px;margin:0;font-weight:800}
+h1{font-size:19px;letter-spacing:2.5px;margin:0}
 .version{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-top:4px}
 #status{font-size:11px;color:#9eb3d8;text-align:right;max-width:48%}
 .status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#36d6a0;margin-right:6px;box-shadow:0 0 10px #36d6a0}
@@ -60,20 +50,16 @@ h1{font-size:19px;letter-spacing:2.5px;margin:0;font-weight:800}
 .orb:after{inset:-16px;animation-delay:1.5s}
 .orb span{font-size:29px;color:#e8faff;text-shadow:0 0 14px #69dcff}
 @keyframes pulse{0%{transform:scale(.88);opacity:.75}100%{transform:scale(1.25);opacity:0}}
-.hero h2{font-size:18px;margin:4px 0 5px;letter-spacing:.4px}
+.hero h2{font-size:18px;margin:4px 0 5px}
 .hero p{margin:0;color:var(--muted);font-size:12px}
 .voice-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:15px}
 .voice-actions button{min-width:128px}
-#voice{background:linear-gradient(135deg,#145cae,#087eaa);border-color:#3caeff;box-shadow:var(--glow)}
+#voice{background:linear-gradient(135deg,#145cae,#087eaa);border-color:#3caeff}
 #wake{background:#171d3d;border-color:#554fa6}
 #stopVoice{background:#281923;border-color:#71404e}
 #autoSpeak{background:#102b31;border-color:#236c78}
 #autoSpeak.off{background:#1b2030;border-color:#39445a;color:#a5b2c9}
-.chat-shell{
-  flex:1;min-height:240px;border:1px solid var(--line);border-radius:19px;
-  background:linear-gradient(180deg,rgba(13,20,34,.88),rgba(8,13,23,.92));
-  box-shadow:0 12px 38px rgba(0,0,0,.18);overflow:hidden;
-}
+.chat-shell{flex:1;min-height:240px;border:1px solid var(--line);border-radius:19px;background:rgba(13,20,34,.92);overflow:hidden}
 .chat-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
 .chat-head strong{font-size:12px;letter-spacing:1px}
 .chat-head span{font-size:10px;color:var(--muted)}
@@ -81,10 +67,7 @@ h1{font-size:19px;letter-spacing:2.5px;margin:0;font-weight:800}
 .msg-row{display:flex;flex-direction:column;margin:10px 0;max-width:92%}
 .msg-row.user-row{margin-left:auto;align-items:flex-end}
 .msg-row.marcus-row{margin-right:auto;align-items:flex-start}
-.msg{
-  padding:12px 14px;border-radius:15px;line-height:1.55;
-  white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;
-}
+.msg{padding:12px 14px;border-radius:15px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
 .user{background:linear-gradient(135deg,#17477e,#12325b);border:1px solid rgba(85,159,255,.25);border-bottom-right-radius:5px}
 .marcus{background:#131f32;border:1px solid rgba(100,143,207,.15);border-bottom-left-radius:5px}
 .msg-tools{display:flex;gap:6px;margin-top:5px}
@@ -94,130 +77,121 @@ h1{font-size:19px;letter-spacing:2.5px;margin:0;font-weight:800}
 #attachment{display:none;margin:0 0 9px;padding:8px 10px;background:#122039;border-radius:10px;color:#b9d0ff;font-size:12px}
 #attachment button{padding:4px 8px;margin-left:8px;background:#402432}
 .controls{display:flex;gap:8px;align-items:center}
-#message{
-  min-width:0;flex:1;background:#0a1220;color:white;border:1px solid #263d60;
-  border-radius:13px;padding:14px;font-size:15px;
-}
+#message{min-width:0;flex:1;background:#0a1220;color:white;border:1px solid #263d60;border-radius:13px;padding:14px;font-size:15px}
 #send{background:linear-gradient(135deg,#276bd0,#167eb5);font-weight:700;min-width:68px}
 #imageInput{display:none}
 .extra-tools{display:flex;gap:7px;flex-wrap:wrap;padding:11px 2px 0}
 .extra-tools button{font-size:11px;padding:8px 10px;background:#101a2b;color:#a9bddc}
 #install[hidden]{display:none}
 .footer{text-align:center;color:#526783;font-size:10px;padding:14px 0 0;letter-spacing:.6px}
-@media(min-width:700px){
-  .app{padding-left:24px;padding-right:24px}
-  #chat{height:42vh}
-  .hero{padding-top:24px}
-}
+@media(min-width:700px){.app{padding-left:24px;padding-right:24px}#chat{height:42vh}}
 @media(max-width:420px){
   .app{padding-left:10px;padding-right:10px}
   .voice-actions button{min-width:0;flex:1;font-size:11px;padding:10px 8px}
-  #chat{height:36vh}
-  .msg-row{max-width:96%}
+  #chat{height:36vh}.msg-row{max-width:96%}
 }
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 <div class="app">
-  <header>
-    <div class="brand">
-      <div class="brand-mark">M</div>
-      <div><h1>MARCUS AI</h1><div class="version">PERSONAL ASSISTANT · V10</div></div>
-    </div>
-    <div id="status"><span class="status-dot"></span>Starting Marcus...</div>
-  </header>
-
-  <section class="hero" aria-label="Marcus voice assistant">
-    <div class="orb-wrap"><div class="orb"><span>✦</span></div></div>
-    <h2>Your assistant is ready.</h2>
-    <p>Talk naturally, or type a message below.</p>
-    <div class="voice-actions">
-      <button id="voice">🎙 Start Live Voice</button>
-      <button id="wake">👂 Wake Marcus</button>
-      <button id="stopVoice">■ Stop Voice</button>
-      <button id="autoSpeak">🔊 Auto-speak: ON</button>
-    </div>
-  </section>
-
-  <section class="chat-shell">
-    <div class="chat-head"><strong>CONVERSATION</strong><span>Private session</span></div>
-    <div id="chat" aria-live="polite"></div>
-    <div id="typing" aria-live="polite"></div>
-    <div class="composer">
-      <div id="attachment"><span id="attachmentName">Image attached</span><button id="removeImage">Remove</button></div>
-      <div class="controls">
-        <input id="message" placeholder="Message Marcus..." autocomplete="off" aria-label="Message Marcus">
-        <button id="send">Send</button>
-      </div>
-      <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp">
-    </div>
-  </section>
-
-  <div class="extra-tools">
-    <button id="speak">🔊 Replay last reply</button>
-    <button id="stopSpeak">⏹ Stop speaking</button>
-    <button id="image">▧ Add image</button>
-    <button id="memory">🧠 Memory</button>
-    <button id="install" hidden>📱 Install</button>
-    <button id="clear">Clear chat</button>
+<header>
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    <div><h1>MARCUS AI</h1><div class="version">PERSONAL ASSISTANT · V10</div></div>
   </div>
-  <div class="footer">MARCUS AI V10 · OBSIDIAN / ELECTRIC BLUE</div>
+  <div id="status"><span class="status-dot"></span>Starting Marcus...</div>
+</header>
+
+<section class="hero">
+  <div class="orb-wrap"><div class="orb"><span>✦</span></div></div>
+  <h2>Your assistant is ready.</h2>
+  <p>Talk naturally, or type a message below.</p>
+  <div class="voice-actions">
+    <button id="voice">🎙 Start Live Voice</button>
+    <button id="wake">👂 Wake Marcus</button>
+    <button id="stopVoice">■ Stop Voice</button>
+    <button id="autoSpeak">🔊 Auto-speak: ON</button>
+  </div>
+</section>
+
+<section class="chat-shell">
+  <div class="chat-head"><strong>CONVERSATION</strong><span>Private session</span></div>
+  <div id="chat" aria-live="polite"></div>
+  <div id="typing" aria-live="polite"></div>
+  <div class="composer">
+    <div id="attachment"><span id="attachmentName">Image attached</span><button id="removeImage">Remove</button></div>
+    <div class="controls">
+      <input id="message" placeholder="Message Marcus..." autocomplete="off" aria-label="Message Marcus">
+      <button id="send">Send</button>
+    </div>
+    <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp">
+  </div>
+</section>
+
+<div class="extra-tools">
+  <button id="speak">🔊 Replay last reply</button>
+  <button id="stopSpeak">⏹ Stop speaking</button>
+  <button id="image">▧ Add image</button>
+  <button id="memory">🧠 Memory</button>
+  <button id="install" hidden>📱 Install</button>
+  <button id="clear">Clear chat</button>
+</div>
+<div class="footer">MARCUS AI V10 · OBSIDIAN / ELECTRIC BLUE</div>
 </div>
 
 <script>
 "use strict";
 
-/* Existing Cloudflare Worker and identity storage are preserved. */
-const WORKER_URL = "https://marcus-ai.cbaby8099.workers.dev";
-const $ = id => document.getElementById(id);
-const chat = $("chat"), input = $("message"), statusText = $("status");
-const HISTORY_KEY = "marcus_v10_history";
-const OLD_HISTORY_KEY = "marcus_v9_history";
+const WORKER_URL="https://marcus-ai.cbaby8099.workers.dev";
+const $=id=>document.getElementById(id);
+const chat=$("chat"),input=$("message"),statusText=$("status");
+const HISTORY_KEY="marcus_v10_history";
+const OLD_HISTORY_KEY="marcus_v9_history";
 
-let history = [], lastReply = "", waiting = false;
-let installPrompt = null, selectedImage = null;
-let recognition = null, voiceMode = "off", voiceRestartTimer = null;
-let speaking = false, speechToken = 0;
-let autoSpeak = localStorage.getItem("marcus_auto_speak") !== "false";
+let history=[],lastReply="",waiting=false;
+let installPrompt=null,selectedImage=null;
+let recognition=null,voiceMode="off",voiceRestartTimer=null;
+let speaking=false,speechToken=0;
+let autoSpeak=localStorage.getItem("marcus_auto_speak")!=="false";
 
-let userId = localStorage.getItem("marcus_user_id");
+let userId=localStorage.getItem("marcus_user_id");
 if(!userId){
-  userId = "marcus-" + (window.crypto && crypto.randomUUID
-    ? crypto.randomUUID().replace(/-/g,"")
-    : Math.random().toString(36).slice(2) + Date.now().toString(36));
+  userId="marcus-"+(window.crypto&&crypto.randomUUID
+    ?crypto.randomUUID().replace(/-/g,"")
+    :Math.random().toString(36).slice(2)+Date.now().toString(36));
   localStorage.setItem("marcus_user_id",userId);
 }
 
 function setStatus(message,active=false){
-  statusText.innerHTML = "";
-  const dot = document.createElement("span");
-  dot.className = "status-dot";
-  dot.style.background = active ? "#39d9ff" : "#36d6a0";
-  dot.style.boxShadow = active ? "0 0 10px #39d9ff" : "0 0 10px #36d6a0";
+  statusText.innerHTML="";
+  const dot=document.createElement("span");
+  dot.className="status-dot";
+  dot.style.background=active?"#39d9ff":"#36d6a0";
+  dot.style.boxShadow=active?"0 0 10px #39d9ff":"0 0 10px #36d6a0";
   statusText.append(dot,document.createTextNode(message));
 }
 function scrollChat(){chat.scrollTop=chat.scrollHeight;}
 
 function displayMessage(text,role){
-  const row = document.createElement("div");
-  row.className = "msg-row " + (role === "user" ? "user-row" : "marcus-row");
-  const bubble = document.createElement("div");
-  bubble.className = "msg " + (role === "user" ? "user" : "marcus");
-  bubble.textContent = text;
+  const row=document.createElement("div");
+  row.className="msg-row "+(role==="user"?"user-row":"marcus-row");
+  const bubble=document.createElement("div");
+  bubble.className="msg "+(role==="user"?"user":"marcus");
+  bubble.textContent=text;
   row.appendChild(bubble);
 
-  if(role !== "user"){
-    const tools = document.createElement("div");
-    tools.className = "msg-tools";
-    const play = document.createElement("button");
-    play.type = "button";
-    play.textContent = "🔊 Speak";
+  if(role!=="user"){
+    const tools=document.createElement("div");
+    tools.className="msg-tools";
+    const play=document.createElement("button");
+    play.type="button";
+    play.textContent="🔊 Speak";
     play.setAttribute("aria-label","Speak this Marcus reply");
-    play.onclick = ()=>speakText(text);
+    play.onclick=()=>speakText(text);
     tools.appendChild(play);
     row.appendChild(tools);
-    lastReply = text;
+    lastReply=text;
   }
   chat.appendChild(row);
   scrollChat();
@@ -246,7 +220,7 @@ function showSavedChat(){
   if(history.length){
     history.forEach(item=>displayMessage(item.content,item.role));
   }else{
-    displayMessage("Hello! I'm Marcus V10. Your personal AI assistant is ready. How can I help?", "assistant");
+    displayMessage("Hello! I'm Marcus V10. Your personal AI assistant is ready. How can I help?","assistant");
   }
 }
 
@@ -270,6 +244,7 @@ async function request(action,data={}){
     throw error;
   }finally{clearTimeout(timeout);}
 }
+
 function readImage(file){
   return new Promise((resolve,reject)=>{
     const reader=new FileReader();
@@ -302,10 +277,6 @@ async function sendMessage(textOverride=null){
     saveHistory();
     setStatus("Marcus is online");
     if(imageData)removeSelectedImage();
-
-    /* Automatic speech is attempted when enabled. Some Android browsers
-       require a user tap after an asynchronous network response. Each reply
-       therefore also has its own Speak control as a reliable fallback. */
     if(autoSpeak)speakText(reply);
   }catch(error){
     addMessage("Connection error: "+error.message,"assistant");
@@ -320,7 +291,9 @@ async function sendMessage(textOverride=null){
 }
 
 $("send").onclick=()=>sendMessage();
-input.addEventListener("keydown",event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();sendMessage();}});
+input.addEventListener("keydown",event=>{
+  if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();sendMessage();}
+});
 $("clear").onclick=()=>{
   if(waiting)return;
   history=[];lastReply="";
@@ -331,7 +304,6 @@ $("clear").onclick=()=>{
   saveHistory();
 };
 
-/* Memory action name and payload remain unchanged for the existing Worker. */
 $("memory").onclick=async()=>{
   if(waiting)return;
   setStatus("Loading memory...",true);
@@ -357,9 +329,8 @@ function stopRecognitionSession(){
   }
 }
 function speakText(text){
-  if(!("speechSynthesis" in window)){
-    setStatus("Speech output is unavailable",true);
-    return;
+  if(!("speechSynthesis"in window)){
+    setStatus("Speech output is unavailable",true);return;
   }
   if(!text)return;
   clearTimeout(voiceRestartTimer);
@@ -394,6 +365,7 @@ $("stopSpeak").onclick=()=>{
   setStatus("Speech stopped");
   if(voiceMode!=="off")scheduleRecognition();
 };
+
 function updateAutoSpeakButton(){
   $("autoSpeak").textContent=autoSpeak?"🔊 Auto-speak: ON":"🔇 Auto-speak: OFF";
   $("autoSpeak").classList.toggle("off",!autoSpeak);
@@ -467,8 +439,7 @@ function handleVoiceTranscript(transcript){
 function startVoice(mode){
   stopVoice();
   if(!getRecognition()){
-    setStatus("Voice recognition is not supported in this browser",true);
-    return;
+    setStatus("Voice recognition is not supported in this browser",true);return;
   }
   voiceMode=mode;
   setStatus(mode==="live"?"Starting live conversation...":"Waiting for the name Marcus...",true);
@@ -520,4 +491,35 @@ installButton.onclick=async()=>{
   }
   installPrompt.prompt();
   await installPrompt.userChoice;
-  installPrompt
+  installPrompt=null;
+};
+window.addEventListener("appinstalled",()=>{
+  setStatus("Marcus installed successfully");
+  installButton.hidden=true;
+});
+
+async function connect(){
+  try{
+    const response=await fetch(WORKER_URL);
+    setStatus(response.ok?"Marcus is online":"Worker needs attention",!response.ok);
+  }catch(error){setStatus("Cannot connect to server",true);}
+}
+function initializeMarcus(){
+  try{
+    showSavedChat();
+    updateAutoSpeakButton();
+    connect();
+    if("serviceWorker"in navigator){
+      window.addEventListener("load",()=>{
+        navigator.serviceWorker.register("./service-worker.js").catch(error=>console.log(error));
+      });
+    }
+  }catch(error){
+    console.error("Marcus startup error:",error);
+    setStatus("Startup error: "+error.message,true);
+  }
+}
+initializeMarcus();
+</script>
+</body>
+  </html>
