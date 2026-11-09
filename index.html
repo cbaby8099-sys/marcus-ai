@@ -1,135 +1,4 @@
->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CJ AI</title>
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #080b14;
-  color: white;
-}
-
-header {
-  background: #111827;
-  padding: 20px;
-  text-align: center;
-  border-bottom: 1px solid #263247;
-}
-
-header h2 {
-  color: #38bdf8;
-  margin: 0;
-}
-
-#chat {
-  height: 65vh;
-  overflow-y: auto;
-  padding: 15px;
-}
-
-.message {
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 12px;
-  max-width: 85%;
-  line-height: 1.5;
-}
-
-.user {
-  background: #075985;
-  margin-left: auto;
-}
-
-.bot {
-  background: #1e293b;
-  margin-right: auto;
-}
-
-.controls {
-  display: flex;
-  padding: 12px;
-  gap: 8px;
-  background: #111827;
-}
-
-input {
-  flex: 1;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  background: #263247;
-  color: white;
-  min-width: 0;
-}
-
-button {
-  background: #0284c7;
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 10px;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <h2>CJ AI</h2>
-  <p>Your future AI assistant</p>
-</header>
-
-<div id="chat">
-  <div class="message bot">
-    Hello! I'm CJ AI V1. How can I help you today?
-  </div>
-</div>
-
-<div class="controls">
-  <input id="userInput" placeholder="Message CJ AI...">
-  <button onclick="sendMessage()">Send</button>
-</div>
-
-<script>
-function sendMessage() {
-  const input = document.getElementById("userInput");
-  const chat = document.getElementById("chat");
-  const message = input.value.trim();
-
-  if (!message) return;
-
-  chat.innerHTML +=
-    '<div class="message user"></div>';
-
-  chat.lastElementChild.textContent = message;
-
-  input.value = "";
-
-  let reply = "I'm CJ AI V1. I'm still learning. Tell me more!";
-
-  if (message.toLowerCase().includes("hello")) {
-    reply = "Hello! Welcome to CJ AI. What are we building today?";
-  } else if (message.toLowerCase().includes("business")) {
-    reply = "Let's build a successful business together!";
-  } else if (message.toLowerCase().includes("money")) {
-    reply = "Let's focus on creating value and building income.";
-  }
-
-  chat.innerHTML +=
-    '<div class="message bot"></div>';
-
-  chat.lastElementChild.textContent = reply;
-  chat.scrollTop = chat.scrollHeight;
-}
-</script>
-
-</body>
-</innerHTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -139,606 +8,513 @@ function sendMessage() {
 <meta name="description" content="Marcus personal AI assistant">
 <link rel="manifest" href="./manifest.json">
 <title>Marcus AI V10</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#080b12;color:#eaf0ff;font-family:Arial,sans-serif}
-header{padding:18px;text-align:center;border-bottom:1px solid #202a40}
-h1{margin:0;color:#75a7ff}
-#status{font-size:12px;color:#91a5c8;margin-top:7px}
-main{max-width:720px;margin:auto;padding:14px}
-#chat{height:58vh;min-height:280px;overflow-y:auto;padding:8px}
-.msg{padding:13px;margin:10px 0;border-radius:14px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
-.user{background:#18345d;margin-left:30px}
-.marcus{background:#151e30;margin-right:30px}
-#controls{display:flex;gap:8px}
-input{min-width:0;flex:1;background:#111b2c;color:white;border:1px solid #34435f;border-radius:12px;padding:14px;font-size:16px}
-button{background:#2459a8;color:white;border:0;border-radius:10px;padding:12px;margin:3px;font-size:14px}
-button:disabled{opacity:.5}
-.tools{margin-top:12px;display:flex;flex-wrap:wrap;gap:5px}
-#typing{color:#91a5c8;font-size:13px;padding:5px}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #080b12;
+  color: #eaf0ff;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 20px;
+  text-align: center;
+  background: #101827;
+  border-bottom: 1px solid #202a40;
+}
+
+h1 {
+  margin: 0;
+  color: #75a7ff;
+  font-size: 27px;
+}
+
+#status {
+  font-size: 12px;
+  color: #91a5c8;
+  margin-top: 8px;
+}
+
+main {
+  max-width: 720px;
+  margin: auto;
+  padding: 14px;
+}
+
+#chat {
+  height: 58vh;
+  min-height: 280px;
+  overflow-y: auto;
+  padding: 8px;
+  scroll-behavior: smooth;
+}
+
+.msg {
+  padding: 13px;
+  margin: 10px 0;
+  border-radius: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 90%;
+}
+
+.user {
+  background: #18345d;
+  margin-left: auto;
+}
+
+.marcus {
+  background: #151e30;
+  margin-right: auto;
+}
+
+#typing {
+  color: #91a5c8;
+  font-size: 13px;
+  padding: 7px;
+  min-height: 25px;
+}
+
+#controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+input {
+  min-width: 0;
+  flex: 1;
+  background: #111b2c;
+  color: white;
+  border: 1px solid #34435f;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 16px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #75a7ff;
+}
+
+button {
+  background: #2459a8;
+  color: white;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 3px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .5;
+}
+
+.tools {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+#send {
+  min-width: 65px;
+}
+
+@media(max-width:400px) {
+  main {
+    padding: 9px;
+  }
+
+  button {
+    padding: 10px;
+    font-size: 12px;
+  }
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>Marcus AI</h1>
-<div id="status">Connecting...</div>
+  <h1>Marcus AI</h1>
+  <div id="status">Connecting...</div>
 </header>
+
 <main>
-<div id="chat"></div>
-<div id="typing"></div>
-<div id="controls">
-<input id="message" placeholder="Talk to Marcus..." autocomplete="off">
-<button id="send">Send</button>
-</div>
-<div class="tools">
-<button id="voice">🎙 Voice</button>
-<button id="speak">🔊 Speak</button>
-<button id="memory">🧠 Memory</button>
-<button id="install" hidden>📱 Install Marcus</button>
-<button id="clear">Clear chat</button>
-</div>
+
+  <div id="chat">
+    <div class="msg marcus">
+      Hello! I'm Marcus. I'm online and ready to help you.
+    </div>
+  </div>
+
+  <div id="typing"></div>
+
+  <div id="controls">
+    <input
+      id="message"
+      placeholder="Talk to Marcus..."
+      autocomplete="off"
+    >
+    <button id="send">Send</button>
+  </div>
+
+  <div class="tools">
+    <button id="voice">🎙 Voice</button>
+    <button id="speak">🔊 Speak</button>
+    <button id="memory">🧠 Memory</button>
+    <button id="install" hidden>📱 Install Marcus</button>
+    <button id="clear">Clear chat</button>
+  </div>
+
 </main>
+
 <script>
-const WORKER_URL="https://marcus-ai.cbaby8099.workers.dev";
-const $=id=>document.getElementById(id);
-const chat=$("chat");
-const statusText=$("status");
-const input=$("message");
 
-let history=[];
-let lastReply="";
-let waiting=false;
-let installPrompt=null;
+const WORKER_URL = "https://marcus-ai.cbaby8099.workers.dev";
 
-let userId=localStorage.getItem("marcus_user_id");
-if(!userId){
- userId="marcus-"+Math.random().toString(36).slice(2);
- localStorage.setItem("marcus_user_id",userId);
+const $ = id => document.getElementById(id);
+
+const chat = $("chat");
+const statusText = $("status");
+const input = $("message");
+
+let history = [];
+let lastReply = "";
+let waiting = false;
+let installPrompt = null;
+
+// USER ID
+let userId = localStorage.getItem("marcus_user_id");
+
+if (!userId) {
+  userId = "marcus-" + Math.random().toString(36).slice(2);
+  localStorage.setItem("marcus_user_id", userId);
 }
 
-function saveHistory(){
- localStorage.setItem("marcus_v10_history",JSON.stringify(history.slice(-40)));
+// SAVE CHAT
+function saveHistory() {
+  localStorage.setItem(
+    "marcus_v10_history",
+    JSON.stringify(history.slice(-40))
+  );
 }
 
-function displayMessage(text,role){
- const div=document.createElement("div");
- div.className="msg "+(role==="user"?"user":"marcus");
- div.textContent=text;
- chat.appendChild(div);
- chat.scrollTop=chat.scrollHeight;
+// DISPLAY MESSAGE
+function displayMessage(text, role) {
+  const div = document.createElement("div");
+
+  div.className =
+    "msg " + (role === "user" ? "user" : "marcus");
+
+  div.textContent = text;
+
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-function addMessage(text,role){
- history.push({role,content:text});
- displayMessage(text,role);
-}
-
-function showSavedChat(){
- try{
-  let saved=JSON.parse(localStorage.getItem("marcus_v10_history")||"null");
-  if(!saved){
-   const old=JSON.parse(sessionStorage.getItem("marcus_v7_history")||"[]");
-   saved=old.flatMap(x=>[
-    {role:"user",content:x.user},
-    {role:"assistant",content:x.marcus}
-   ]);
-  }
-  if(Array.isArray(saved)){
-   history=saved.slice(-40);
-   history.forEach(m=>displayMessage(m.content,m.role));
-   saveHistory();
-  }
- }catch(e){history=[]}
-}
-
-async function request(action,data={}){
- const response=await fetch(WORKER_URL,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({action,userId,...data})
- });
- const result=await response.json();
- if(!response.ok)throw new Error(result.error||"Server error");
- return result;
-}
-
-async function sendMessage(){
- const message=input.value.trim();
- if(!message||waiting)return;
-
- input.value="";
- addMessage(message,"user");
- saveHistory();
-
- waiting=true;
- $("send").disabled=true;
- $("typing").textContent="Marcus is thinking...";
-
- try{
-  const previousHistory=history.slice(0,-1).slice(-12);
-  const result=await request("chat",{
-   message,
-   history:previousHistory
+// ADD MESSAGE
+function addMessage(text, role) {
+  history.push({
+    role: role,
+    content: text
   });
-  const reply=result.reply||result.response||"I couldn't create a reply.";
-  lastReply=reply;
-  addMessage(reply,"assistant");
-  saveHistory();
-  statusText.textContent="Marcus is online";
- }catch(error){
-  addMessage("Connection error: "+error.message,"assistant");
-  saveHistory();
-  statusText.textContent="Connection problem";
- }finally{
-  waiting=false;
-  $("send").disabled=false;
-  $("typing").textContent="";
-  input.focus();
- }
+
+  displayMessage(text, role);
 }
 
-$("send").onclick=sendMessage;
-input.addEventListener("keydown",e=>{
- if(e.key==="Enter")sendMessage();
-});
+// LOAD SAVED CHAT
+function showSavedChat() {
+  try {
+    let saved = JSON.parse(
+      localStorage.getItem("marcus_v10_history") || "null"
+    );
 
-$("clear").onclick=()=>{
- history=[];
- lastReply="";
- localStorage.removeItem("marcus_v10_history");
- chat.innerHTML="";
- $("typing").textContent="";
-};
+    if (!saved) {
+      const old = JSON.parse(
+        sessionStorage.getItem("marcus_v7_history") || "[]"
+      );
 
-$("memory").onclick=async()=>{
- statusText.textContent="Loading memory...";
- try{
-  const result=await request("get_memory");
-  const memory=typeof result.memory==="undefined"?result:result.memory;
-  addMessage("Marcus memory:\n"+JSON.stringify(memory,null,2),"assistant");
-  saveHistory();
-  statusText.textContent="Memory loaded";
- }catch(error){
-  addMessage("Memory error: "+error.message,"assistant");
-  saveHistory();
-  statusText.textContent="Memory unavailable";
- }
-};
+      saved = old.flatMap(x => [
+        { role: "user", content: x.user },
+        { role: "assistant", content: x.marcus }
+      ]);
+    }
 
-$("speak").onclick=()=>{
- if(!lastReply||!("speechSynthesis" in window))return;
- speechSynthesis.cancel();
- const speech=new SpeechSynthesisUtterance(lastReply);
- speech.lang="en-ZA";
- speechSynthesis.speak(speech);
-};
+    if (Array.isArray(saved)) {
+      history = saved.slice(-40);
 
-$("voice").onclick=()=>{
- const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!Recognition){
-  addMessage("Voice input is not supported in this browser.","assistant");
-  saveHistory();
-  return;
- }
- const recognition=new Recognition();
- recognition.lang="en-ZA";
- recognition.onresult=e=>{
-  input.value=e.results[0][0].transcript;
-  sendMessage();
- };
- recognition.onerror=()=>statusText.textContent="Voice input error";
- recognition.start();
-};
+      chat.innerHTML = "";
 
-window.addEventListener("beforeinstallprompt",e=>{
- e.preventDefault();
- installPrompt=e;
- $("install").hidden=false;
-});
+      history.forEach(m => {
+        displayMessage(m.content, m.role);
+      });
 
-$("install").onclick=async()=>{
- if(!installPrompt)return;
- installPrompt.prompt();
- await installPrompt.userChoice;
- installPrompt=null;
- $("install").hidden=true;
-};
-
-window.addEventListener("appinstalled",()=>{
- statusText.textContent="Marcus installed on your phone";
- $("install").hidden=true;
-});
-
-async function connect(){
- try{
-  const response=await fetch(WORKER_URL);
-  statusText.textContent=response.ok?"Marcus is online":"Worker needs attention";
- }catch(e){
-  statusText.textContent="Cannot connect to Marcus";
- }
+      saveHistory();
+    }
+  } catch (error) {
+    history = [];
+  }
 }
 
+// CONNECT TO WORKER
+async function request(action, data = {}) {
+  const response = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      action,
+      userId,
+      ...data
+    })
+  });
+
+  let result;
+
+  try {
+    result = await response.json();
+  } catch (error) {
+    throw new Error("Worker returned an invalid response.");
+  }
+
+  if (!response.ok) {
+    throw new Error(result.error || "Server error");
+  }
+
+  return result;
+}
+
+// SEND MESSAGE
+async function sendMessage() {
+  const message = input.value.trim();
+
+  if (!message || waiting) return;
+
+  input.value = "";
+
+  addMessage(message, "user");
+  saveHistory();
+
+  waiting = true;
+
+  $("send").disabled = true;
+  $("typing").textContent = "Marcus is thinking...";
+
+  try {
+    const previousHistory = history
+      .slice(0, -1)
+      .slice(-12);
+
+    const result = await request("chat", {
+      message,
+      history: previousHistory
+    });
+
+    const reply =
+      result.reply ||
+      result.response ||
+      "I couldn't create a reply.";
+
+    lastReply = reply;
+
+    addMessage(reply, "assistant");
+    saveHistory();
+
+    statusText.textContent = "Marcus is online";
+
+  } catch (error) {
+    addMessage(
+      "Connection error: " + error.message,
+      "assistant"
+    );
+
+    saveHistory();
+
+    statusText.textContent = "Connection problem";
+
+  } finally {
+    waiting = false;
+
+    $("send").disabled = false;
+    $("typing").textContent = "";
+
+    input.focus();
+  }
+}
+
+// SEND BUTTON
+$("send").onclick = sendMessage;
+
+// ENTER KEY
+input.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
+
+// CLEAR CHAT
+$("clear").onclick = () => {
+  history = [];
+  lastReply = "";
+
+  localStorage.removeItem("marcus_v10_history");
+
+  chat.innerHTML = "";
+  $("typing").textContent = "";
+};
+
+// MEMORY
+$("memory").onclick = async () => {
+  statusText.textContent = "Loading memory...";
+
+  try {
+    const result = await request("get_memory");
+
+    const memory =
+      typeof result.memory === "undefined"
+        ? result
+        : result.memory;
+
+    addMessage(
+      "Marcus memory:\n" +
+      JSON.stringify(memory, null, 2),
+      "assistant"
+    );
+
+    saveHistory();
+
+    statusText.textContent = "Memory loaded";
+
+  } catch (error) {
+    addMessage(
+      "Memory error: " + error.message,
+      "assistant"
+    );
+
+    saveHistory();
+
+    statusText.textContent = "Memory unavailable";
+  }
+};
+
+// TEXT TO SPEECH
+$("speak").onclick = () => {
+  if (!lastReply) return;
+
+  if (!("speechSynthesis" in window)) {
+    statusText.textContent = "Speech is not supported.";
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const speech = new SpeechSynthesisUtterance(lastReply);
+
+  speech.lang = "en-ZA";
+  speech.rate = 1;
+  speech.pitch = 1;
+
+  speechSynthesis.speak(speech);
+};
+
+// VOICE INPUT
+$("voice").onclick = () => {
+  const Recognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!Recognition) {
+    addMessage(
+      "Voice input is not supported in this browser.",
+      "assistant"
+    );
+    saveHistory();
+    return;
+  }
+
+  const recognition = new Recognition();
+
+  recognition.lang = "en-ZA";
+
+  recognition.onresult = event => {
+    input.value = event.results[0][0].transcript;
+    sendMessage();
+  };
+
+  recognition.onerror = () => {
+    statusText.textContent = "Voice input error";
+  };
+
+  recognition.start();
+};
+
+// INSTALL MARCUS
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+
+  installPrompt = event;
+
+  $("install").hidden = false;
+});
+
+$("install").onclick = async () => {
+  if (!installPrompt) return;
+
+  installPrompt.prompt();
+
+  await installPrompt.userChoice;
+
+  installPrompt = null;
+
+  $("install").hidden = true;
+};
+
+window.addEventListener("appinstalled", () => {
+  statusText.textContent = "Marcus installed on your phone";
+
+  $("install").hidden = true;
+});
+
+// CHECK CONNECTION
+async function connect() {
+  try {
+    const response = await fetch(WORKER_URL);
+
+    statusText.textContent =
+      response.ok
+        ? "Marcus is online"
+        : "Worker needs attention";
+
+  } catch (error) {
+    statusText.textContent = "Cannot connect to Marcus";
+  }
+}
+
+// START MARCUS
 showSavedChat();
 
-if("serviceWorker" in navigator){
- window.addEventListener("load",()=>{
-  navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
- });
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./service-worker.js")
+      .catch(() => {});
+  });
 }
 
 connect();
+
 </script>
 </body>
 </html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CJ AI</title>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #080b14;
-  color: white;
-}
-
-header {
-  background: #111827;
-  padding: 20px;
-  text-align: center;
-  border-bottom: 1px solid #263247;
-}
-
-header h2 {
-  color: #38bdf8;
-  margin: 0;
-}
-
-#chat {
-  height: 65vh;
-  overflow-y: auto;
-  padding: 15px;
-}
-
-.message {
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 12px;
-  max-width: 85%;
-  line-height: 1.5;
-}
-
-.user {
-  background: #075985;
-  margin-left: auto;
-}
-
-.bot {
-  background: #1e293b;
-  margin-right: auto;
-}
-
-.controls {
-  display: flex;
-  padding: 12px;
-  gap: 8px;
-  background: #111827;
-}
-
-input {
-  flex: 1;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  background: #263247;
-  color: white;
-  min-width: 0;
-}
-
-button {
-  background: #0284c7;
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 10px;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <h2>CJ AI</h2>
-  <p>Your future AI assistant</p>
-</header>
-
-<div id="chat">
-  <div class="message bot">
-    Hello! I'm CJ AI V1. How can I help you today?
-  </div>
-</div>
-
-<div class="controls">
-  <input id="userInput" placeholder="Message CJ AI...">
-  <button onclick="sendMessage()">Send</button>
-</div>
-
-<script>
-function sendMessage() {
-  const input = document.getElementById("userInput");
-  const chat = document.getElementById("chat");
-  const message = input.value.trim();
-
-  if (!message) return;
-
-  chat.innerHTML +=
-    '<div class="message user"></div>';
-
-  chat.lastElementChild.textContent = message;
-
-  input.value = "";
-
-  let reply = "I'm CJ AI V1. I'm still learning. Tell me more!";
-
-  if (message.toLowerCase().includes("hello")) {
-    reply = "Hello! Welcome to CJ AI. What are we building today?";
-  } else if (message.toLowerCase().includes("business")) {
-    reply = "Let's build a successful business together!";
-  } else if (message.toLowerCase().includes("money")) {
-    reply = "Let's focus on creating value and building income.";
-  }
-
-  chat.innerHTML +=
-    '<div class="message bot"></div>';
-
-  chat.lastElementChild.textContent = reply;
-  chat.scrollTop = chat.scrollHeight;
-}
-</script>
-
-</body>
-</innerHTML
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#080b12">
-<meta name="description" content="Marcus personal AI assistant">
-<link rel="manifest" href="./manifest.json">
-<title>Marcus AI V10</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#080b12;color:#eaf0ff;font-family:Arial,sans-serif}
-header{padding:18px;text-align:center;border-bottom:1px solid #202a40}
-h1{margin:0;color:#75a7ff}
-#status{font-size:12px;color:#91a5c8;margin-top:7px}
-main{max-width:720px;margin:auto;padding:14px}
-#chat{height:58vh;min-height:280px;overflow-y:auto;padding:8px}
-.msg{padding:13px;margin:10px 0;border-radius:14px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
-.user{background:#18345d;margin-left:30px}
-.marcus{background:#151e30;margin-right:30px}
-#controls{display:flex;gap:8px}
-input{min-width:0;flex:1;background:#111b2c;color:white;border:1px solid #34435f;border-radius:12px;padding:14px;font-size:16px}
-button{background:#2459a8;color:white;border:0;border-radius:10px;padding:12px;margin:3px;font-size:14px}
-button:disabled{opacity:.5}
-.tools{margin-top:12px;display:flex;flex-wrap:wrap;gap:5px}
-#typing{color:#91a5c8;font-size:13px;padding:5px}
-</style>
-</head>
-<body>
-<header>
-<h1>Marcus AI</h1>
-<div id="status">Connecting...</div>
-</header>
-<main>
-<div id="chat"></div>
-<div id="typing"></div>
-<div id="controls">
-<input id="message" placeholder="Talk to Marcus..." autocomplete="off">
-<button id="send">Send</button>
-</div>
-<div class="tools">
-<button id="voice">🎙 Voice</button>
-<button id="speak">🔊 Speak</button>
-<button id="memory">🧠 Memory</button>
-<button id="install" hidden>📱 Install Marcus</button>
-<button id="clear">Clear chat</button>
-</div>
-</main>
-<script>
-const WORKER_URL="https://marcus-ai.cbaby8099.workers.dev";
-const $=id=>document.getElementById(id);
-const chat=$("chat");
-const statusText=$("status");
-const input=$("message");
-
-let history=[];
-let lastReply="";
-let waiting=false;
-let installPrompt=null;
-
-let userId=localStorage.getItem("marcus_user_id");
-if(!userId){
- userId="marcus-"+Math.random().toString(36).slice(2);
- localStorage.setItem("marcus_user_id",userId);
-}
-
-function saveHistory(){
- localStorage.setItem("marcus_v10_history",JSON.stringify(history.slice(-40)));
-}
-
-function displayMessage(text,role){
- const div=document.createElement("div");
- div.className="msg "+(role==="user"?"user":"marcus");
- div.textContent=text;
- chat.appendChild(div);
- chat.scrollTop=chat.scrollHeight;
-}
-
-function addMessage(text,role){
- history.push({role,content:text});
- displayMessage(text,role);
-}
-
-function showSavedChat(){
- try{
-  let saved=JSON.parse(localStorage.getItem("marcus_v10_history")||"null");
-  if(!saved){
-   const old=JSON.parse(sessionStorage.getItem("marcus_v7_history")||"[]");
-   saved=old.flatMap(x=>[
-    {role:"user",content:x.user},
-    {role:"assistant",content:x.marcus}
-   ]);
-  }
-  if(Array.isArray(saved)){
-   history=saved.slice(-40);
-   history.forEach(m=>displayMessage(m.content,m.role));
-   saveHistory();
-  }
- }catch(e){history=[]}
-}
-
-async function request(action,data={}){
- const response=await fetch(WORKER_URL,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({action,userId,...data})
- });
- const result=await response.json();
- if(!response.ok)throw new Error(result.error||"Server error");
- return result;
-}
-
-async function sendMessage(){
- const message=input.value.trim();
- if(!message||waiting)return;
-
- input.value="";
- addMessage(message,"user");
- saveHistory();
-
- waiting=true;
- $("send").disabled=true;
- $("typing").textContent="Marcus is thinking...";
-
- try{
-  const previousHistory=history.slice(0,-1).slice(-12);
-  const result=await request("chat",{
-   message,
-   history:previousHistory
-  });
-  const reply=result.reply||result.response||"I couldn't create a reply.";
-  lastReply=reply;
-  addMessage(reply,"assistant");
-  saveHistory();
-  statusText.textContent="Marcus is online";
- }catch(error){
-  addMessage("Connection error: "+error.message,"assistant");
-  saveHistory();
-  statusText.textContent="Connection problem";
- }finally{
-  waiting=false;
-  $("send").disabled=false;
-  $("typing").textContent="";
-  input.focus();
- }
-}
-
-$("send").onclick=sendMessage;
-input.addEventListener("keydown",e=>{
- if(e.key==="Enter")sendMessage();
-});
-
-$("clear").onclick=()=>{
- history=[];
- lastReply="";
- localStorage.removeItem("marcus_v10_history");
- chat.innerHTML="";
- $("typing").textContent="";
-};
-
-$("memory").onclick=async()=>{
- statusText.textContent="Loading memory...";
- try{
-  const result=await request("get_memory");
-  const memory=typeof result.memory==="undefined"?result:result.memory;
-  addMessage("Marcus memory:\n"+JSON.stringify(memory,null,2),"assistant");
-  saveHistory();
-  statusText.textContent="Memory loaded";
- }catch(error){
-  addMessage("Memory error: "+error.message,"assistant");
-  saveHistory();
-  statusText.textContent="Memory unavailable";
- }
-};
-
-$("speak").onclick=()=>{
- if(!lastReply||!("speechSynthesis" in window))return;
- speechSynthesis.cancel();
- const speech=new SpeechSynthesisUtterance(lastReply);
- speech.lang="en-ZA";
- speechSynthesis.speak(speech);
-};
-
-$("voice").onclick=()=>{
- const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!Recognition){
-  addMessage("Voice input is not supported in this browser.","assistant");
-  saveHistory();
-  return;
- }
- const recognition=new Recognition();
- recognition.lang="en-ZA";
- recognition.onresult=e=>{
-  input.value=e.results[0][0].transcript;
-  sendMessage();
- };
- recognition.onerror=()=>statusText.textContent="Voice input error";
- recognition.start();
-};
-
-window.addEventListener("beforeinstallprompt",e=>{
- e.preventDefault();
- installPrompt=e;
- $("install").hidden=false;
-});
-
-$("install").onclick=async()=>{
- if(!installPrompt)return;
- installPrompt.prompt();
- await installPrompt.userChoice;
- installPrompt=null;
- $("install").hidden=true;
-};
-
-window.addEventListener("appinstalled",()=>{
- statusText.textContent="Marcus installed on your phone";
- $("install").hidden=true;
-});
-
-async function connect(){
- try{
-  const response=await fetch(WORKER_URL);
-  statusText.textContent=response.ok?"Marcus is online":"Worker needs attention";
- }catch(e){
-  statusText.textContent="Cannot connect to Marcus";
- }
-}
-
-showSavedChat();
-
-if("serviceWorker" in navigator){
- window.addEventListener("load",()=>{
-  navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
- });
-}
-
-connect();
-</script>
-</body>
-</
 
