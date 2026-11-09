@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,14 +66,12 @@ button:disabled{opacity:.5;cursor:not-allowed}
 </head>
 
 <body>
-
 <header>
   <h1>MARCUS AI</h1>
   <div id="status">Starting Marcus V10...</div>
 </header>
 
 <main>
-
   <div id="chat"></div>
   <div id="typing"></div>
 
@@ -104,12 +101,12 @@ button:disabled{opacity:.5;cursor:not-allowed}
   </div>
 
   <div class="small">Marcus AI V10 · Personal AI Assistant</div>
-
 </main>
 
 <script>
 "use strict";
 
+/* CONFIGURATION */
 const WORKER_URL =
   "https://marcus-ai.cbaby8099.workers.dev";
 
@@ -122,13 +119,14 @@ const statusText = $("status");
 const HISTORY_KEY = "marcus_v10_history";
 const OLD_HISTORY_KEY = "marcus_v9_history";
 
+/* APPLICATION STATE */
 let history = [];
 let lastReply = "";
 let waiting = false;
 let installPrompt = null;
 let selectedImage = null;
 
-// Preserve existing user identity
+/* PRESERVE EXISTING USER IDENTITY */
 let userId = localStorage.getItem("marcus_user_id");
 
 if(!userId){
@@ -141,24 +139,25 @@ if(!userId){
   localStorage.setItem("marcus_user_id",userId);
 }
 
-// VOICE STATE
+/* VOICE STATE */
 let recognition = null;
 let voiceMode = "off";
 let voiceRestartTimer = null;
 let speaking = false;
-let recognitionAvailable = false;
+let speechToken = 0;
 
-// DISPLAY MESSAGE
+/* DISPLAY */
 function displayMessage(text,role){
   const div = document.createElement("div");
+
   div.className = "msg " +
     (role === "user" ? "user" : "marcus");
+
   div.textContent = text;
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
 }
 
-// ADD MESSAGE
 function addMessage(text,role){
   history.push({
     role:role === "user" ? "user" : "assistant",
@@ -168,7 +167,7 @@ function addMessage(text,role){
   displayMessage(text,role);
 }
 
-// SAVE HISTORY
+/* HISTORY */
 function saveHistory(){
   try{
     localStorage.setItem(
@@ -180,14 +179,16 @@ function saveHistory(){
   }
 }
 
-// LOAD HISTORY
 function showSavedChat(){
   try{
     let saved = localStorage.getItem(HISTORY_KEY);
 
     if(!saved){
       saved = localStorage.getItem(OLD_HISTORY_KEY);
-      if(saved) localStorage.setItem(HISTORY_KEY,saved);
+
+      if(saved){
+        localStorage.setItem(HISTORY_KEY,saved);
+      }
     }
 
     const data = JSON.parse(saved || "[]");
@@ -217,9 +218,10 @@ function showSavedChat(){
   }
 }
 
-// WORKER REQUEST
+/* SERVER REQUEST */
 async function request(action,data={}){
   const controller = new AbortController();
+
   const timeout = setTimeout(
     ()=>controller.abort(),90000
   );
@@ -254,31 +256,33 @@ async function request(action,data={}){
     if(error.name === "AbortError"){
       throw new Error("Marcus took too long to respond.");
     }
+
     throw error;
+
   }finally{
     clearTimeout(timeout);
   }
 }
 
-// READ IMAGE
+/* IMAGE READER */
 function readImage(file){
   return new Promise((resolve,reject)=>{
     const reader = new FileReader();
+
     reader.onload = ()=>resolve(reader.result);
+
     reader.onerror = ()=>reject(
       new Error("Could not read image.")
     );
+
     reader.readAsDataURL(file);
   });
 }
 
-// SEND MESSAGE
+/* SEND MESSAGE */
 async function sendMessage(textOverride=null){
-
   const message = (
-    textOverride !== null
-      ? textOverride
-      : input.value
+    textOverride !== null ? textOverride : input.value
   ).trim();
 
   if(waiting || (!message && !selectedImage)) return;
@@ -286,11 +290,14 @@ async function sendMessage(textOverride=null){
   input.value = "";
 
   const imageData = selectedImage;
+
   const finalMessage = message ||
     "Please analyse this image.";
 
   addMessage(
-    imageData ? "Image attached\n" + finalMessage : finalMessage,
+    imageData
+      ? "Image attached\n" + finalMessage
+      : finalMessage,
     "user"
   );
 
@@ -301,14 +308,17 @@ async function sendMessage(textOverride=null){
   $("typing").textContent = "Marcus is thinking...";
 
   try{
-    const previousHistory = history.slice(0,-1).slice(-12);
+    const previousHistory =
+      history.slice(0,-1).slice(-12);
 
     const data = {
       message:finalMessage,
       history:previousHistory
     };
 
-    if(imageData) data.imageData = imageData;
+    if(imageData){
+      data.imageData = imageData;
+    }
 
     const result = await request("chat",data);
 
@@ -324,15 +334,20 @@ async function sendMessage(textOverride=null){
 
     statusText.textContent = "Marcus V10 is online";
 
-    if(imageData) removeSelectedImage();
+    if(imageData){
+      removeSelectedImage();
+    }
 
-    // Speak automatically during live voice
     if(voiceMode !== "off"){
       speakText(reply);
     }
 
   }catch(error){
-    addMessage("Connection error: " + error.message,"assistant");
+    addMessage(
+      "Connection error: " + error.message,
+      "assistant"
+    );
+
     saveHistory();
     statusText.textContent = "Connection problem";
 
@@ -341,21 +356,21 @@ async function sendMessage(textOverride=null){
     $("send").disabled = false;
     $("typing").textContent = "";
 
-    // Resume listening after the answer
     if(voiceMode !== "off" && !speaking){
       scheduleRecognition();
     }
   }
 }
 
-// SEND CONTROLS
+/* CHAT CONTROLS */
 $("send").onclick = ()=>sendMessage();
 
 input.addEventListener("keydown",event=>{
-  if(event.key === "Enter") sendMessage();
+  if(event.key === "Enter"){
+    sendMessage();
+  }
 });
 
-// CLEAR CHAT
 $("clear").onclick = ()=>{
   if(waiting) return;
 
@@ -366,11 +381,13 @@ $("clear").onclick = ()=>{
   localStorage.removeItem(OLD_HISTORY_KEY);
 
   chat.innerHTML = "";
-  displayMessage("Chat cleared. I'm ready.", "assistant");
+
+  displayMessage("Chat cleared. I'm ready.","assistant");
+
   saveHistory();
 };
 
-// MEMORY
+/* MEMORY */
 $("memory").onclick = async ()=>{
   if(waiting) return;
 
@@ -378,9 +395,11 @@ $("memory").onclick = async ()=>{
 
   try{
     const result = await request("get_memory");
-    const memory = typeof result.memory === "undefined"
-      ? result
-      : result.memory;
+
+    const memory =
+      typeof result.memory === "undefined"
+        ? result
+        : result.memory;
 
     addMessage(
       "YOUR SAVED MEMORY:\n\n" +
@@ -389,158 +408,24 @@ $("memory").onclick = async ()=>{
     );
 
     saveHistory();
+
     statusText.textContent = "Memory loaded";
 
   }catch(error){
-    addMessage("Memory error: " + error.message,"assistant");
+    addMessage(
+      "Memory error: " + error.message,
+      "assistant"
+    );
+
     saveHistory();
     statusText.textContent = "Memory unavailable";
   }
 };
 
-// SPEECH OUTPUT
-function speakText(text){
-  if(!("speechSynthesis" in window)) return;
-
-  speechSynthesis.cancel();
-  speaking = true;
-
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = "en-ZA";
-  speech.rate = 1;
-  speech.pitch = 1;
-
-  speech.onend = ()=>{
-    speaking = false;
-    if(voiceMode !== "off") scheduleRecognition();
-  };
-
-  speech.onerror = ()=>{
-    speaking = false;
-    if(voiceMode !== "off") scheduleRecognition();
-  };
-
-  speechSynthesis.speak(speech);
-}
-
-$("speak").onclick = ()=>{
-  if(lastReply) speakText(lastReply);
-};
-
-$("stopSpeak").onclick = ()=>{
-  if("speechSynthesis" in window){
-    speechSynthesis.cancel();
-  }
-  speaking = false;
-};
-
-// VOICE RECOGNITION
-function getRecognition(){
-  const Recognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if(!Recognition) return null;
-
-  const r = new Recognition();
-  r.lang = "en-ZA";
-  r.continuous = true;
-  r.interimResults = false;
-  r.maxAlternatives = 1;
-
-  return r;
-}
-
-function scheduleRecognition(){
-  clearTimeout(voiceRestartTimer);
-
-  if(voiceMode === "off" || waiting || speaking) return;
-
-  voiceRestartTimer = setTimeout(()=>{
-    startRecognition();
-  },700);
-}
-
-function startRecognition(){
-  if(voiceMode === "off" || waiting || speaking) return;
-
-  try{
-    if(recognition){
-      try{recognition.stop();}catch(error){}
-    }
-
-    recognition = getRecognition();
-
-    if(!recognition){
-      stopVoice();
-      statusText.textContent =
-        "Speech recognition is not supported here.";
-      return;
-    }
-
-    recognitionAvailable = true;
-
-    recognition.onstart = ()=>{
-      if(voiceMode === "live"){
-        statusText.textContent = "Live voice: listening...";
-      }else if(voiceMode === "wake"){
-        statusText.textContent = "Listening for Marcus...";
-      }
-    };
-
-    recognition.onresult = event=>{
-      for(let i=event.resultIndex;i<event.results.length;i++){
-        if(!event.results[i].isFinal) continue;
-
-        const transcript =
-          event.results[i][0].transcript.trim();
-
-        if(!transcript) continue;
-
-        handleVoiceTranscript(transcript);
-      }
-    };
-
-    recognition.onerror = event=>{
-      if(event.error === "not-allowed" ||
-         event.error === "service-not-allowed"){
-        stopVoice();
-        statusText.textContent =
-          "Microphone permission is required.";
-      }
-    };
-
-    recognition.onend = ()=>{
-      if(voiceMode !== "off" && !waiting && !speaking){
-        scheduleRecognition();
-      }
-    };
-
-    recognition.start();
-
-  }catch(error){
-    scheduleRecognition();
-  }
-}
-
-// HANDLE SPOKEN WORDS
-function handleVoiceTranscript(transcript){
-
-  if(voiceMode === "off" || waiting) return;
-
-  if(voiceMode === "wake"){
-    const match = transcript.match(/\bmarcus\b/i);
-
-    if(!match) return;
-
-    const command = transcript
-      .replace(/\bmarcus\b/i,"")
-      .trim();
-
-
-// SPEECH OUTPUT + VOICE RECOGNITION
+/* STOP OLD RECOGNITION SESSION */
 function stopRecognitionSession(){
   const old = recognition;
+
   recognition = null;
 
   if(old){
@@ -555,38 +440,61 @@ function stopRecognitionSession(){
   }
 }
 
+/* SPEECH OUTPUT */
 function speakText(text){
-  if(!("speechSynthesis" in window)) return;
+  if(!("speechSynthesis" in window)){
+    statusText.textContent = "Speech output is unavailable.";
+    return;
+  }
 
   clearTimeout(voiceRestartTimer);
+
   stopRecognitionSession();
 
+  const currentToken = ++speechToken;
+
   speechSynthesis.cancel();
+
   speaking = true;
 
   const speech = new SpeechSynthesisUtterance(text);
+
   speech.lang = "en-ZA";
   speech.rate = 1;
   speech.pitch = 1;
 
   speech.onend = ()=>{
+    if(currentToken !== speechToken) return;
+
     speaking = false;
-    if(voiceMode !== "off") scheduleRecognition();
+
+    if(voiceMode !== "off"){
+      scheduleRecognition();
+    }
   };
 
   speech.onerror = ()=>{
+    if(currentToken !== speechToken) return;
+
     speaking = false;
-    if(voiceMode !== "off") scheduleRecognition();
+
+    if(voiceMode !== "off"){
+      scheduleRecognition();
+    }
   };
 
   speechSynthesis.speak(speech);
 }
 
 $("speak").onclick = ()=>{
-  if(lastReply) speakText(lastReply);
+  if(lastReply){
+    speakText(lastReply);
+  }
 };
 
 $("stopSpeak").onclick = ()=>{
+  ++speechToken;
+
   if("speechSynthesis" in window){
     speechSynthesis.cancel();
   }
@@ -598,7 +506,7 @@ $("stopSpeak").onclick = ()=>{
   }
 };
 
-// VOICE RECOGNITION
+/* SPEECH RECOGNITION */
 function getRecognition(){
   const Recognition =
     window.SpeechRecognition ||
@@ -607,6 +515,7 @@ function getRecognition(){
   if(!Recognition) return null;
 
   const r = new Recognition();
+
   r.lang = "en-ZA";
   r.continuous = true;
   r.interimResults = false;
@@ -615,6 +524,7 @@ function getRecognition(){
   return r;
 }
 
+/* RESTART LISTENING */
 function scheduleRecognition(){
   clearTimeout(voiceRestartTimer);
 
@@ -630,6 +540,7 @@ function scheduleRecognition(){
   },1000);
 }
 
+/* START ONE RECOGNITION SESSION */
 function startRecognition(){
   if(
     voiceMode === "off" ||
@@ -642,13 +553,14 @@ function startRecognition(){
 
   if(!r){
     stopVoice();
+
     statusText.textContent =
       "Speech recognition is not supported.";
+
     return;
   }
 
   recognition = r;
-  recognitionAvailable = true;
 
   r.onstart = ()=>{
     statusText.textContent =
@@ -659,7 +571,6 @@ function startRecognition(){
 
   r.onresult = event=>{
     for(let i=event.resultIndex;i<event.results.length;i++){
-
       if(!event.results[i].isFinal) continue;
 
       const transcript =
@@ -667,15 +578,17 @@ function startRecognition(){
 
       if(!transcript) continue;
 
-      // In wake mode, ignore speech until Marcus is called.
-      if(voiceMode === "wake"){
-        if(!/\bmarcus\b/i.test(transcript)) continue;
+      if(
+        voiceMode === "wake" &&
+        !/\bmarcus\b/i.test(transcript)
+      ){
+        continue;
       }
 
-      // End this recognition session before processing speech.
       stopRecognitionSession();
 
       handleVoiceTranscript(transcript);
+
       return;
     }
   };
@@ -686,8 +599,10 @@ function startRecognition(){
       event.error === "service-not-allowed"
     ){
       stopVoice();
+
       statusText.textContent =
         "Microphone permission is required.";
+
     }else{
       statusText.textContent =
         "Voice interrupted. Reconnecting...";
@@ -710,6 +625,7 @@ function startRecognition(){
 
   try{
     r.start();
+
   }catch(error){
     if(recognition === r){
       recognition = null;
@@ -719,9 +635,8 @@ function startRecognition(){
   }
 }
 
-// HANDLE SPOKEN WORDS
+/* HANDLE SPOKEN WORDS */
 function handleVoiceTranscript(transcript){
-
   if(voiceMode === "off" || waiting) return;
 
   if(voiceMode === "wake"){
@@ -747,23 +662,14 @@ function handleVoiceTranscript(transcript){
   }
 }
 
-// START LIVE VOICE
-$("voice").onclick = ()=>{
-  startVoice("live");
-};
-
-// START WAKE WORD
-$("wake").onclick = ()=>{
-  startVoice("wake");
-};
-
+/* START LIVE VOICE */
 function startVoice(mode){
-
   stopVoice();
 
   if(!getRecognition()){
     statusText.textContent =
       "Voice recognition is not supported in this browser.";
+
     return;
   }
 
@@ -774,16 +680,26 @@ function startVoice(mode){
       ? "Starting live conversation..."
       : "Waiting for the name Marcus...";
 
-  scheduleRecognition();
+  startRecognition();
 }
 
-// STOP VOICE
+$("voice").onclick = ()=>{
+  startVoice("live");
+};
+
+$("wake").onclick = ()=>{
+  startVoice("wake");
+};
+
+/* STOP VOICE */
 function stopVoice(){
   voiceMode = "off";
 
   clearTimeout(voiceRestartTimer);
 
   stopRecognitionSession();
+
+  ++speechToken;
 
   if("speechSynthesis" in window){
     speechSynthesis.cancel();
@@ -796,18 +712,22 @@ function stopVoice(){
 }
 
 $("stopVoice").onclick = stopVoice;
-  
 
-// IMAGE PICKER
+/* IMAGE PICKER */
 $("image").onclick = ()=>{
   $("imageInput").click();
 };
 
 $("imageInput").onchange = async event=>{
   const file = event.target.files[0];
+
   if(!file) return;
 
-  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+  if(![
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ].includes(file.type)){
     alert("Choose a JPG, PNG or WebP image.");
     return;
   }
@@ -819,9 +739,14 @@ $("imageInput").onchange = async event=>{
 
   try{
     selectedImage = await readImage(file);
+
     $("attachment").style.display = "block";
-    $("attachmentName").textContent = "Attached: " + file.name;
+
+    $("attachmentName").textContent =
+      "Attached: " + file.name;
+
     statusText.textContent = "Image ready";
+
   }catch(error){
     alert(error.message);
   }
@@ -829,39 +754,49 @@ $("imageInput").onchange = async event=>{
 
 function removeSelectedImage(){
   selectedImage = null;
+
   $("imageInput").value = "";
+
   $("attachment").style.display = "none";
 }
 
 $("removeImage").onclick = removeSelectedImage;
 
-// INSTALL
+/* PWA INSTALLATION */
 const installButton = $("install");
-installButton.hidden = false;
 
 window.addEventListener("beforeinstallprompt",event=>{
   event.preventDefault();
+
   installPrompt = event;
+
   installButton.hidden = false;
 });
 
 installButton.onclick = async ()=>{
   if(!installPrompt){
-    alert("No installation prompt is available. Marcus remains available in your browser.");
+    alert(
+      "No installation prompt is available. Marcus remains available in your browser."
+    );
+
     return;
   }
 
   installPrompt.prompt();
+
   await installPrompt.userChoice;
+
   installPrompt = null;
 };
 
 window.addEventListener("appinstalled",()=>{
-  statusText.textContent = "Marcus installed successfully";
+  statusText.textContent =
+    "Marcus installed successfully";
+
   installButton.hidden = true;
 });
 
-// SERVER CONNECTION
+/* SERVER CONNECTION */
 async function connect(){
   try{
     const response = await fetch(WORKER_URL);
@@ -871,22 +806,36 @@ async function connect(){
       : "Worker needs attention";
 
   }catch(error){
-    statusText.textContent = "Cannot connect to server";
+    statusText.textContent =
+      "Cannot connect to server";
   }
 }
 
-// START
-showSavedChat();
-connect();
+/* INITIALIZE MARCUS */
+function initializeMarcus(){
+  try{
+    showSavedChat();
 
-if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker
-      .register("./service-worker.js")
-      .catch(error=>console.log(error));
-  });
+    connect();
+
+    if("serviceWorker" in navigator){
+      window.addEventListener("load",()=>{
+        navigator.serviceWorker
+          .register("./service-worker.js")
+          .catch(error=>console.log(error));
+      });
+    }
+
+  }catch(error){
+    console.error("Marcus startup error:",error);
+
+    statusText.textContent =
+      "Marcus startup error: " + error.message;
+  }
 }
+
+initializeMarcus();
+
 </script>
 </body>
-  </html>
-  
+      </html>
