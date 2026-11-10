@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marcus ID Finder</title>
+<style>
+body{background:#080b12;color:white;font-family:Arial;padding:25px}
+h2{color:#168bff}
+code{display:block;background:#111827;padding:15px;overflow-wrap:anywhere}
+button{background:#168bff;color:white;border:0;padding:14px;border-radius:10px}
+</style>
+</head>
+<body>
+<h2>Marcus V10 ID Finder</h2>
+<p>Your Marcus ID:</p>
+<code id="result">Checking...</code>
+<button onclick="copyID()">Copy ID</button>
+<p id="status"></p>
+<script>
+const id=localStorage.getItem("marcus_user_id");
+document.getElementById("result").textContent=id||"No ID found";
+function copyID(){
+if(!id){document.getElementById("status").textContent="No ID found. Open V10 first.";return;}
+navigator.clipboard.writeText(id).then(()=>document.getElementById("status").textContent="ID copied.").catch(()=>document.getElementById("status").textContent="Select and copy the ID above.");
+}
+</script>
+</body>
+</html>
